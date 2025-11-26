@@ -1,0 +1,230 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f3ff 0%, #e8e4ff 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dekorativni elementi - krugovi u pozadini */
+.login-container::before {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: rgba(108, 90, 229, 0.1);
+  border-radius: 50%;
+  top: -200px;
+  left: -200px;
+  z-index: 0;
+}
+
+.login-container::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(249, 189, 0, 0.08);
+  border-radius: 50%;
+  bottom: -150px;
+  right: -150px;
+  z-index: 0;
+}
+
+.login-card {
+  background: linear-gradient(135deg, #6c5ae5 0%, #5847cc 100%);
+  border-radius: 20px;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 60px rgba(108, 90, 229, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+/* Dekorativni element na kartici */
+.login-card::before {
+  content: '✨';
+  position: absolute;
+  font-size: 40px;
+  top: 20px;
+  right: 30px;
+  opacity: 0.3;
+}
+
+h1 {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 32px;
+  font-weight: 700;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Subtitle */
+.subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-bottom: 35px;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+label {
+  display: block;
+  color: #fff;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Icon u input polju */
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #6c5ae5;
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px 14px 45px;
+  background-color: #fff;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  color: #333;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+input:focus {
+  outline: none;
+  border-color: #f9bd00;
+  box-shadow: 0 0 0 4px rgba(249, 189, 0, 0.1);
+}
+
+input.error {
+  border-color: #ff4444;
+  background-color: #fff5f5;
+}
+
+.error-message {
+  color: #fff;
+  background-color: rgba(255, 68, 68, 0.2);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+.server-error {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background-color: #f9bd00;
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '→';
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #e0aa00;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(249, 189, 0, 0.5);
+}
+
+.btn-primary:hover:not(:disabled)::before {
+  transform: translateY(-50%) translateX(5px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 25px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+.register-link a {
+  color: #f9bd00;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Emoji dekoracija */
+.emoji-decoration {
+  text-align: center;
+  font-size: 50px;
+  margin-bottom: 15px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

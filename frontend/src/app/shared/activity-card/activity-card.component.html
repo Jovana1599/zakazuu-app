@@ -1,0 +1,19 @@
+<a [routerLink]="['/activities', activity.id]" class="activity-card">
+  <div class="card-image">
+    <img [src]="activity.image_url || defaultImage" [alt]="activity.name" />
+    <span class="institution-badge">{{ activity.institution_name }}</span>
+  </div>
+
+  <div class="card-body">
+    <h3 class="name">{{ activity.name }}</h3>
+    <p class="description">{{ activity.description }}</p>
+  </div>
+
+  <div class="card-footer">
+    <span class="category">{{ activity.category }}</span>
+    <div class="rating">
+      <span class="star">★</span>
+      <span class="value">{{ activity.rating }}</span>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,68 @@
+  <div class="login-container">
+    <div class="login-card">
+
+      <!-- Emoji ikonica -->
+      <div class="emoji-decoration">👋</div>
+
+      <h1>Dobrodošli!</h1>
+      <p class="subtitle">Prijavite se na vaš nalog</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">📧 Email adresa</label>
+          <div class="input-wrapper">
+            <span class="input-icon">@</span>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="tvoj@email.com"
+              [class.error]="email?.invalid && email?.touched">
+          </div>
+          <div class="error-message" *ngIf="email?.invalid && email?.touched">
+            <span *ngIf="email?.errors?.['required']">⚠️ Email je obavezan</span>
+            <span *ngIf="email?.errors?.['email']">⚠️ Unesite validan email</span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">🔒 Lozinka</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔑</span>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              placeholder="••••••••"
+              [class.error]="password?.invalid && password?.touched">
+          </div>
+          <div class="error-message" *ngIf="password?.invalid && password?.touched">
+            <span *ngIf="password?.errors?.['required']">⚠️ Lozinka je obavezna</span>
+            <span *ngIf="password?.errors?.['minlength']">⚠️ Minimum 6 karaktera</span>
+          </div>
+        </div>
+
+        <!-- Error message from server -->
+        <div class="server-error" *ngIf="errorMessage">
+          ❌ {{ errorMessage }}
+        </div>
+
+        <!-- Submit button -->
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="loginForm.invalid || isLoading">
+          <span *ngIf="!isLoading">Prijavi se</span>
+          <span *ngIf="isLoading">⏳ Prijavljivanje...</span>
+        </button>
+
+        <!-- Link to register -->
+        <p class="register-link">
+          Nemaš nalog? <a routerLink="/register">Registruj se ovde</a>
+        </p>
+      </form>
+    </div>
+  </div>

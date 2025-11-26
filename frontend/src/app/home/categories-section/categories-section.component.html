@@ -1,0 +1,14 @@
+<section class="categories-section">
+  <h2>Popularne kategorije aktivnosti</h2>
+
+  <div class="categories-grid">
+    <div
+      class="category-item"
+      *ngFor="let category of categories"
+      (click)="onCategoryClick(category.id)"
+    >
+      <div class="category-icon">{{ category.icon }}</div>
+      <span class="category-name">{{ category.name }}</span>
+    </div>
+  </div>
+</section>

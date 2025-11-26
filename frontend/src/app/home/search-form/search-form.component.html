@@ -1,0 +1,13 @@
+<div class="search-form">
+  <div class="input-wrapper">
+    <span class="icon">🔍</span>
+    <input type="text" [(ngModel)]="activity" placeholder="Pretraži aktivnost" />
+  </div>
+
+  <div class="input-wrapper">
+    <span class="icon">📍</span>
+    <input type="text" [(ngModel)]="location" placeholder="Ukucaj lokaciju" />
+  </div>
+
+  <button class="btn-search" (click)="onSearch()">Pronađi</button>
+</div>
