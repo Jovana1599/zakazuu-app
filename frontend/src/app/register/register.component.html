@@ -1,0 +1,95 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="card-header">
+      <h1>Kreiraj nalog</h1>
+      <p class="subtitle">Registruj se kao roditelj i pronađi aktivnosti za svoje mališane</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Ime i prezime -->
+      <div class="form-group">
+        <label for="name">Ime i prezime</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Unesite ime i prezime"
+          [class.error]="name?.invalid && name?.touched"
+        />
+        <div class="error-message" *ngIf="name?.invalid && name?.touched">
+          <span *ngIf="name?.errors?.['required']">Ime je obavezno</span>
+          <span *ngIf="name?.errors?.['minlength']">Minimum 2 karaktera</span>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email adresa</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="vas@email.com"
+          [class.error]="email?.invalid && email?.touched"
+        />
+        <div class="error-message" *ngIf="email?.invalid && email?.touched">
+          <span *ngIf="email?.errors?.['required']">Email je obavezan</span>
+          <span *ngIf="email?.errors?.['email']">Unesite validan email</span>
+        </div>
+      </div>
+
+      <!-- Lozinka -->
+      <div class="form-group">
+        <label for="password">Lozinka</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Minimum 6 karaktera"
+          [class.error]="password?.invalid && password?.touched"
+        />
+        <div class="error-message" *ngIf="password?.invalid && password?.touched">
+          <span *ngIf="password?.errors?.['required']">Lozinka je obavezna</span>
+          <span *ngIf="password?.errors?.['minlength']">Minimum 6 karaktera</span>
+        </div>
+      </div>
+
+      <!-- Potvrda lozinke -->
+      <div class="form-group">
+        <label for="password_confirmation">Potvrdi lozinku</label>
+        <input
+          type="password"
+          id="password_confirmation"
+          formControlName="password_confirmation"
+          placeholder="Ponovite lozinku"
+          [class.error]="password_confirmation?.invalid && password_confirmation?.touched"
+        />
+        <div
+          class="error-message"
+          *ngIf="password_confirmation?.invalid && password_confirmation?.touched"
+        >
+          <span *ngIf="password_confirmation?.errors?.['required']"
+            >Potvrda lozinke je obavezna</span
+          >
+          <span *ngIf="password_confirmation?.errors?.['passwordMismatch']"
+            >Lozinke se ne poklapaju</span
+          >
+        </div>
+      </div>
+
+      <!-- Server error -->
+      <div class="server-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Registruj se</span>
+        <span *ngIf="isLoading">Registracija u toku...</span>
+      </button>
+
+      <!-- Link na login -->
+      <p class="login-link">Već imaš nalog? <a routerLink="/login">Prijavi se</a></p>
+    </form>
+  </div>
+</div>

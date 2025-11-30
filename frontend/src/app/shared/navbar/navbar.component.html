@@ -1,1 +1,76 @@
-<p>navbar.component works!</p>
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <a routerLink="/home" class="logo">
+      <span class="logo-icon">Z</span>
+      <span class="logo-text">ZakaZuu</span>
+    </a>
+
+    <!-- Desna strana -->
+    <div class="navbar-right">
+      <!-- Link za ustanove - samo ako NIJE ulogovan ILI ako je ustanova/admin -->
+      <a
+        *ngIf="!authService.isLoggedIn() || authService.isInstitution() || authService.isAdmin()"
+        routerLink="/institution/register"
+        class="institution-link"
+      >
+        Ponudi svoje usluge
+      </a>
+
+      <!-- Ako NIJE ulogovan -->
+      <ng-container *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/register" class="btn-register">Registruj se</a>
+        <a routerLink="/login" class="btn-login">Prijavi se</a>
+      </ng-container>
+
+      <!-- Ako JESTE ulogovan -->
+      <ng-container *ngIf="authService.isLoggedIn()">
+        <!-- Korpa - samo za roditelje -->
+        <div class="cart" *ngIf="authService.isParent()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-count">0</span>
+        </div>
+
+        <!-- User info -->
+        <div class="user-menu">
+          <div class="avatar">
+            {{ authService.getCurrentUser()?.name?.charAt(0)?.toUpperCase() }}
+          </div>
+          <span class="user-name">{{ authService.getCurrentUser()?.name }}</span>
+
+          <!-- Dropdown -->
+          <div class="dropdown">
+            <a routerLink="/profile" class="dropdown-item">Moj profil</a>
+            <a *ngIf="authService.isParent()" routerLink="/my-bookings" class="dropdown-item"
+              >Moje rezervacije</a
+            >
+            <a
+              *ngIf="authService.isInstitution()"
+              routerLink="/institution/dashboard"
+              class="dropdown-item"
+              >Moja ponuda</a
+            >
+            <a *ngIf="authService.isAdmin()" routerLink="/admin/dashboard" class="dropdown-item"
+              >Admin panel</a
+            >
+            <button (click)="logout()" class="dropdown-item logout">Odjavi se</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</nav>

@@ -1,68 +1,141 @@
+<div class="login-page">
   <div class="login-container">
-    <div class="login-card">
-
-      <!-- Emoji ikonica -->
-      <div class="emoji-decoration">👋</div>
-
-      <h1>Dobrodošli!</h1>
-      <p class="subtitle">Prijavite se na vaš nalog</p>
-
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-        <!-- Email -->
-        <div class="form-group">
-          <label for="email">📧 Email adresa</label>
-          <div class="input-wrapper">
-            <span class="input-icon">@</span>
-            <input
-              type="email"
-              id="email"
-              formControlName="email"
-              placeholder="tvoj@email.com"
-              [class.error]="email?.invalid && email?.touched">
+    <!-- Left side - Branding -->
+    <div class="login-branding">
+      <div class="branding-content">
+        <div class="logo">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h1>ZakaZuu</h1>
+        <p>Platforma za rezervaciju dečijih aktivnosti</p>
+        <div class="features">
+          <div class="feature">
+            <i class="fas fa-search"></i>
+            <span>Pronađite aktivnosti u vašem gradu</span>
           </div>
-          <div class="error-message" *ngIf="email?.invalid && email?.touched">
-            <span *ngIf="email?.errors?.['required']">⚠️ Email je obavezan</span>
-            <span *ngIf="email?.errors?.['email']">⚠️ Unesite validan email</span>
+          <div class="feature">
+            <i class="fas fa-clock"></i>
+            <span>Rezervišite termine online</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-child"></i>
+            <span>Upravljajte profilima dece</span>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Password -->
-        <div class="form-group">
-          <label for="password">🔒 Lozinka</label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔑</span>
-            <input
-              type="password"
-              id="password"
-              formControlName="password"
-              placeholder="••••••••"
-              [class.error]="password?.invalid && password?.touched">
-          </div>
-          <div class="error-message" *ngIf="password?.invalid && password?.touched">
-            <span *ngIf="password?.errors?.['required']">⚠️ Lozinka je obavezna</span>
-            <span *ngIf="password?.errors?.['minlength']">⚠️ Minimum 6 karaktera</span>
-          </div>
+    <!-- Right side - Form -->
+    <div class="login-form-container">
+      <div class="login-card">
+        <div class="card-header">
+          <h2>Dobrodošli nazad</h2>
+          <p>Prijavite se na svoj nalog</p>
         </div>
 
-        <!-- Error message from server -->
-        <div class="server-error" *ngIf="errorMessage">
-          ❌ {{ errorMessage }}
-        </div>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <!-- Email field -->
+          <div class="form-group">
+            <label for="email">
+              <i class="fas fa-envelope"></i>
+              Email adresa
+            </label>
+            <div class="input-wrapper" [class.error]="email.invalid && email.touched">
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="vas@email.com"
+                (focus)="clearError()"
+              />
+            </div>
+            @if (email.hasError('required') && email.touched) {
+            <span class="error-text">
+              <i class="fas fa-exclamation-circle"></i>
+              Email je obavezan
+            </span>
+            } @if (email.hasError('email') && email.touched) {
+            <span class="error-text">
+              <i class="fas fa-exclamation-circle"></i>
+              Unesite validnu email adresu
+            </span>
+            }
+          </div>
 
-        <!-- Submit button -->
-        <button
-          type="submit"
-          class="btn-primary"
-          [disabled]="loginForm.invalid || isLoading">
-          <span *ngIf="!isLoading">Prijavi se</span>
-          <span *ngIf="isLoading">⏳ Prijavljivanje...</span>
-        </button>
+          <!-- Password field -->
+          <div class="form-group">
+            <label for="password">
+              <i class="fas fa-lock"></i>
+              Lozinka
+            </label>
+            <div class="input-wrapper" [class.error]="password.invalid && password.touched">
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                id="password"
+                formControlName="password"
+                placeholder="Unesite lozinku"
+                (focus)="clearError()"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                (click)="togglePassword()"
+                tabindex="-1"
+              >
+                @if (showPassword()) {
+                <i class="fas fa-eye-slash"></i>
+                } @else {
+                <i class="fas fa-eye"></i>
+                }
+              </button>
+            </div>
+            @if (password.hasError('required') && password.touched) {
+            <span class="error-text">
+              <i class="fas fa-exclamation-circle"></i>
+              Lozinka je obavezna
+            </span>
+            } @if (password.hasError('minlength') && password.touched) {
+            <span class="error-text">
+              <i class="fas fa-exclamation-circle"></i>
+              Lozinka mora imati najmanje 6 karaktera
+            </span>
+            }
+          </div>
 
-        <!-- Link to register -->
-        <p class="register-link">
-          Nemaš nalog? <a routerLink="/register">Registruj se ovde</a>
-        </p>
-      </form>
+          <!-- Server error -->
+          @if (errorMessage()) {
+          <div class="server-error">
+            <i class="fas fa-times-circle"></i>
+            <span>{{ errorMessage() }}</span>
+          </div>
+          }
+
+          <!-- Submit button -->
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="isLoading()"
+            [class.loading]="isLoading()"
+          >
+            @if (isLoading()) {
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Prijavljivanje...</span>
+            } @else {
+            <span>Prijavi se</span>
+            <i class="fas fa-arrow-right"></i>
+            }
+          </button>
+
+          <!-- Register link -->
+          <div class="form-footer">
+            <p>Nemate nalog?</p>
+            <a routerLink="/register" class="register-link">
+              Registrujte se
+              <i class="fas fa-user-plus"></i>
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
+</div>

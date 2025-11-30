@@ -56,42 +56,6 @@ export class HomeFacade {
       .subscribe();
   }
 
-  search(query: string, location: string): void {
-    this._store.setSearchQuery(query);
-    this._store.setLocation(location);
-    this._store.setLoading(true);
-
-    this._service
-      .getActivities()
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        map((activities: any[]) =>
-          activities
-            .map((a) => ({
-              ...a,
-              image_url: this.mapImageUrl(a.image_url),
-              institution_name: a.institution?.name || 'Nepoznato',
-            }))
-            .filter((a) => {
-              const matchesQuery = !query || a.name.toLowerCase().includes(query.toLowerCase());
-              const matchesLocation =
-                !location || a.institution_name.toLowerCase().includes(location.toLowerCase());
-              return matchesQuery && matchesLocation;
-            })
-        ),
-        tap((activities: Activity[]) => {
-          this._store.setActivities(activities);
-          this._store.setLoading(false);
-        }),
-        catchError((error) => {
-          this._store.setError('Greška pri pretrazi');
-          this._store.setLoading(false);
-          return of([]);
-        })
-      )
-      .subscribe();
-  }
-
   selectCategory(category: string | null): void {
     this._store.setCategory(category);
   }

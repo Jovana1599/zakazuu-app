@@ -1,10 +1,14 @@
 .search-form {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
   padding: 100px;
-  border-radius: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 700px;
   margin: 0 auto;
 }
@@ -12,23 +16,29 @@
 .input-wrapper {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
   padding: 0 16px;
   flex: 1;
+  transition: all 0.2s ease;
 
-  .icon {
-    font-size: 14px;
-    margin-right: 10px;
-    opacity: 0.8;
+  &:focus-within {
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  i {
+    font-size: 15px;
+    color: #fff;
+    margin-right: 12px;
   }
 
   input {
     background: transparent;
     border: none;
-    padding: 12px 0;
-    color: white;
-    font-size: 14px;
+    padding: 14px 0;
+    color: #fff;
+    font-size: 15px;
     width: 100%;
     outline: none;
 
@@ -39,18 +49,41 @@
 }
 
 .btn-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: #f9bd00;
-  color: #333;
   border: none;
-  padding: 12px 28px;
-  border-radius: 4px;
+  padding: 14px 24px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   white-space: nowrap;
 
+  i {
+    font-size: 14px;
+  }
+
   &:hover {
-    background: #e5ad00;
+    background: #e5ac00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 189, 0, 0.4);
+  }
+}
+
+@media (max-width: 768px) {
+  .search-form {
+    flex-direction: column;
+  }
+
+  .input-wrapper {
+    width: 100%;
+  }
+
+  .btn-search {
+    width: 100%;
+    justify-content: center;
   }
 }

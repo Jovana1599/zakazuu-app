@@ -1,27 +1,31 @@
-import { Component, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-export interface SearchParams {
-  activity: string;
-  location: string;
-}
 @Component({
   selector: 'app-search-form',
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './search-form.component.html',
   styleUrl: './search-form.component.scss',
 })
 export class SearchFormComponent {
-  @Output() search = new EventEmitter<SearchParams>();
+  private readonly router = inject(Router);
 
   activity = '';
   location = '';
 
   onSearch(): void {
-    this.search.emit({
-      activity: this.activity,
-      location: this.location,
-    });
+    const queryParams: any = {};
+
+    if (this.activity.trim()) {
+      queryParams.search = this.activity.trim();
+    }
+
+    if (this.location.trim()) {
+      queryParams.city = this.location.trim();
+    }
+
+    this.router.navigate(['/activities'], { queryParams });
   }
 }

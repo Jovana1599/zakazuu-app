@@ -18,7 +18,7 @@ interface Category {
 export class CategoriesSectionComponent {
   categories: Category[] = [
     { id: 'birthday', name: 'Rođendani', icon: '🎂' },
-    { id: 'swimming', name: 'Plivanje', icon: '🏊' },
+    { id: 'plivanje', name: 'Plivanje', icon: '🏊' },
     { id: 'skating', name: 'Klizanje', icon: '⛸️' },
     { id: 'education', name: 'Edukacija', icon: '📚' },
     { id: 'art', name: 'Umetnost', icon: '🎨' },
@@ -29,9 +29,9 @@ export class CategoriesSectionComponent {
 
   constructor(private router: Router) {}
 
-  onCategoryClick(categoryId: string): void {
+  onCategoryClick(name: string): void {
     this.router.navigate(['/activities'], {
-      queryParams: { category: categoryId },
+      queryParams: { category: name },
     });
   }
 }

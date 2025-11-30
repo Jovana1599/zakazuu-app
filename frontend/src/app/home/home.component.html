@@ -1,6 +1,6 @@
 <div class="home-page">
   <section class="hero">
-    <app-search-form (search)="onSearch($event)"></app-search-form>
+    <app-search-form></app-search-form>
   </section>
 
   <app-categories-section></app-categories-section>
@@ -8,26 +8,23 @@
   <section class="activities-section">
     <div class="section-header">
       <h2>Pronađite najbolje ocenjene aktivnosti u blizini Vas</h2>
-      <a routerLink="/activities" class="view-more" *ngIf="!isLoading() && activities().length > 0">
-        Prikaži više <span class="arrow">→</span>
-      </a>
+      @if (!isLoading() && activities().length > 0) {
+      <a routerLink="/activities" class="view-more"> Prikaži više <span class="arrow">→</span> </a>
+      }
     </div>
 
-    <div class="loading" *ngIf="isLoading()">Učitavanje aktivnosti...</div>
-
-    <div class="error" *ngIf="error()">
-      {{ error() }}
+    @if (isLoading()) {
+    <div class="loading">Učitavanje aktivnosti...</div>
+    } @if (error()) {
+    <div class="error">{{ error() }}</div>
+    } @if (!isLoading() && !error()) {
+    <div class="activities-grid">
+      @for (activity of activities(); track activity.id) {
+      <app-activity-card [activity]="activity"></app-activity-card>
+      }
     </div>
-
-    <div class="activities-grid" *ngIf="!isLoading() && !error()">
-      <app-activity-card
-        *ngFor="let activity of activities()"
-        [activity]="activity"
-      ></app-activity-card>
-    </div>
-
-    <div class="empty" *ngIf="!isLoading() && !error() && activities().length === 0">
-      Nema dostupnih aktivnosti.
-    </div>
+    } @if (!isLoading() && !error() && activities().length === 0) {
+    <div class="empty">Nema dostupnih aktivnosti.</div>
+    }
   </section>
 </div>

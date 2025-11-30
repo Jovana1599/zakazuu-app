@@ -1,13 +1,16 @@
-<div class="search-form">
+<form autocomplete="off" class="search-form" (ngSubmit)="onSearch()">
   <div class="input-wrapper">
-    <span class="icon">🔍</span>
-    <input type="text" [(ngModel)]="activity" placeholder="Pretraži aktivnost" />
+    <i class="fas fa-search"></i>
+    <input type="text" [(ngModel)]="activity" name="activity" placeholder="Pretraži aktivnost" />
   </div>
 
   <div class="input-wrapper">
-    <span class="icon">📍</span>
-    <input type="text" [(ngModel)]="location" placeholder="Ukucaj lokaciju" />
+    <i class="fas fa-map-marker-alt"></i>
+    <input type="text" [(ngModel)]="location" name="location" placeholder="Ukucaj lokaciju" />
   </div>
 
-  <button class="btn-search" (click)="onSearch()">Pronađi</button>
-</div>
+  <button type="submit" class="btn-search">
+    <i class="fas fa-search"></i>
+    Pronađi
+  </button>
+</form>

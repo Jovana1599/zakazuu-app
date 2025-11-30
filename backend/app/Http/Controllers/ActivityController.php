@@ -11,13 +11,27 @@ class ActivityController extends Controller
     public function index(Request $request)
     {
         $query = Activity::with(['institution:id,name,email']);
-        //filter po godinama 
+
+        // Filter po kategoriji
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter po gradu (preko lokacija)
+        if ($request->has('city')) {
+            $query->whereHas('timeSlots.location', function ($q) use ($request) {
+                $q->where('city', 'like', '%' . $request->city . '%');
+            });
+        }
+
+        // Filter po godinama
         if ($request->has('age')) {
             $age = (int) $request->age;
-            $query->where('min_age', '<=', $age)
-                ->where('max_age', '>=', $age);
+            $query->where('age_from', '<=', $age)
+                ->where('age_to', '>=', $age);
         }
-        //filter po maximalnoj ceni
+
+        // Filter po maximalnoj ceni
         if ($request->has('max_price')) {
             $query->where('price', '<=', $request->max_price);
         }
@@ -38,7 +52,6 @@ class ActivityController extends Controller
             'activities' => $activities
         ]);
     }
-
     public function show($id)
     { {
             $activity = Activity::with([
@@ -51,7 +64,7 @@ class ActivityController extends Controller
                         ->orderBy('date', 'asc')
                         ->orderBy('time_from', 'asc');
                 },
-                'timeSlots.location:id,name,address,city' // Lokacije termina
+                'timeSlots.location:id,address,city' // Lokacije termina
             ])->findOrFail($id);
 
             return response()->json([

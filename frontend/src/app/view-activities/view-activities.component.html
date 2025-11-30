@@ -1,0 +1,119 @@
+<div class="activities-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Aktivnosti</h1>
+    @if (!hasActiveFilters()) {
+    <p>Pronađite aktivnost za vaše mališane</p>
+    } @else {
+    <p>
+      Rezultati pretrage @if (selectedCategory) {
+      <span> u kategoriji "{{ selectedCategoryName() }}"</span>
+      } @if (selectedCity) {
+      <span> u gradu "{{ selectedCity }}"</span>
+      } @if (searchQuery) {
+      <span> za "{{ searchQuery }}"</span>
+      }
+    </p>
+    }
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Filters sidebar -->
+    <aside class="filters-sidebar">
+      <div class="filters-header">
+        <h3><i class="fas fa-filter"></i> Filteri</h3>
+        @if (hasActiveFilters()) {
+        <button class="btn-clear" (click)="clearFilters()">
+          <i class="fas fa-times"></i> Obriši sve
+        </button>
+        }
+      </div>
+
+      <!-- Search -->
+      <div class="filter-group">
+        <label><i class="fas fa-search"></i> Pretraga</label>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          placeholder="Naziv aktivnosti..."
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+
+      <!-- City -->
+      <div class="filter-group">
+        <label><i class="fas fa-map-marker-alt"></i> Grad</label>
+        <select [(ngModel)]="selectedCity" (change)="applyFilters()">
+          <option value="">Svi gradovi</option>
+          @for (city of cities(); track city) {
+          <option [value]="city">{{ city }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Category -->
+      <div class="filter-group">
+        <label><i class="fas fa-th-large"></i> Kategorija</label>
+        <select [(ngModel)]="selectedCategory" (change)="applyFilters()">
+          <option value="">Sve kategorije</option>
+          @for (cat of categories(); track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+
+      <button class="btn-apply" (click)="applyFilters()">
+        <i class="fas fa-check"></i> Primeni filtere
+      </button>
+    </aside>
+
+    <!-- Activities grid -->
+    <main class="activities-main">
+      <!-- Loading -->
+      @if (isLoading()) {
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Učitavanje aktivnosti...</p>
+      </div>
+      }
+
+      <!-- Error -->
+      @if (error()) {
+      <div class="error">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>{{ error() }}</p>
+        <button (click)="loadActivities()"><i class="fas fa-redo"></i> Pokušaj ponovo</button>
+      </div>
+      }
+
+      <!-- Results count -->
+      @if (!isLoading() && !error()) {
+      <div class="results-info">
+        <i class="fas fa-list"></i>
+        <span>Pronađeno {{ activitiesCount() }} aktivnosti</span>
+      </div>
+      }
+
+      <!-- Activities grid -->
+      @if (!isLoading() && !error() && activitiesCount() > 0) {
+      <div class="activities-grid">
+        @for (activity of activities(); track activity.id) {
+        <app-activity-card [activity]="activity"></app-activity-card>
+        }
+      </div>
+      }
+
+      <!-- Empty state -->
+      @if (!isLoading() && !error() && activitiesCount() === 0) {
+      <div class="empty-state">
+        <i class="fas fa-search empty-icon"></i>
+        <h3>Nema rezultata</h3>
+        <p>Nismo pronašli aktivnosti koje odgovaraju vašim kriterijumima.</p>
+        <button class="btn-clear-empty" (click)="clearFilters()">
+          <i class="fas fa-times"></i> Obriši filtere
+        </button>
+      </div>
+      }
+    </main>
+  </div>
+</div>
