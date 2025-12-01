@@ -5,6 +5,7 @@ import { RegisterComponent } from './register/register.component';
 import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
 import { ViewActivitiesComponent } from './view-activities/view-activities.component';
 import { ProfileComponent } from './profile/profile.component';
+import { DashboardComponent } from './institution/dashboard/dashboard.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
@@ -13,4 +14,7 @@ export const routes: Routes = [
   { path: 'activities', component: ViewActivitiesComponent },
   { path: 'activities/:id', component: ActivityDetailComponent },
   { path: 'profile', component: ProfileComponent },
+
+  // Institution routes
+  { path: 'institution', component: DashboardComponent },
 ];
