@@ -14,7 +14,7 @@ export interface Child {
   updated_at?: string;
 }
 
-export interface CreateChildRequest {
+export interface AddChildRequest {
   first_name: string;
   last_name: string;
   age: number;
@@ -47,7 +47,7 @@ export class ChildService {
   }
 
   // Dodavanje novog deteta
-  createChild(data: CreateChildRequest): Observable<{ message: string; child: Child }> {
+  addChild(data: AddChildRequest): Observable<{ message: string; child: Child }> {
     return this.api.post('/parent/children', data);
   }
 

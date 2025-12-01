@@ -32,7 +32,7 @@ class ChildController extends Controller
             'last_name' => 'required|string|max:255',
             'age' => 'required|integer|min:0',
             'medical_restrictions' => 'nullable|string|max:500',
-            'notes' => 'nullable|string|max:500',
+            'note' => 'nullable|string|max:500',
         ]);
 
         //dodaj prant_user id automatski od ulogovanog korisnika 
@@ -88,12 +88,13 @@ class ChildController extends Controller
         ]);
     }
     //Obrisi dete
-
     public function destroy($id)
     {
         $child = Child::where('id', $id)->where('parent_user_id', auth()->id())->firstOrFail();
 
         $childName = $child->first_name . ' ' . $child->last_name;
+
+        $child->delete();  // DODAJ OVO
 
         return response()->json([
             'message' => "Dete '{$childName}' je obrisano"

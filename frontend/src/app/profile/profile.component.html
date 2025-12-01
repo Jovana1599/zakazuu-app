@@ -1,0 +1,216 @@
+<div class="profile-page">
+  <aside class="sidebar">
+    <nav class="side-menu">
+      <button
+        class="menu-item"
+        [class.active]="activeTab() === 'profile'"
+        (click)="setActiveTab('profile')"
+      >
+        <i class="fa-solid fa-user"></i>
+        <span>Moj profil</span>
+      </button>
+      <button
+        class="menu-item"
+        [class.active]="activeTab() === 'reservations'"
+        (click)="setActiveTab('reservations')"
+      >
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Moje rezervacije</span>
+        <span class="badge">3</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    @if (activeTab() === 'profile') {
+    <!-- Profile Section -->
+    <section class="profile-section">
+      <div class="section-card">
+        <h2><i class="fa-solid fa-user"></i> Osnovni podaci</h2>
+        @if (user()) {
+        <div class="profile-info">
+          <div class="avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="info-details">
+            <h3>{{ user()!.name }}</h3>
+            <p><i class="fa-solid fa-envelope"></i> {{ user()!.email }}</p>
+          </div>
+          <button class="btn-edit-profile">
+            <i class="fa-solid fa-pen"></i>
+            Izmeni
+          </button>
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- Children Section -->
+    <section class="children-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-children"></i> Moja deca</h2>
+          <button class="btn-add" (click)="openAddForm()">
+            <i class="fa-solid fa-plus"></i>
+            Dodaj dete
+          </button>
+        </div>
+
+        @if (isLoading()) {
+        <div class="loading">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Učitavanje...
+        </div>
+        } @if (error()) {
+        <div class="error">
+          <i class="fa-solid fa-exclamation-circle"></i>
+          {{ error() }}
+        </div>
+        } @if (!isLoading() && !error()) { @if (hasChildren()) {
+        <div class="children-grid">
+          @for (child of children(); track child.id) {
+          <div class="child-card">
+            <div class="child-avatar">
+              <i class="fa-solid fa-child"></i>
+            </div>
+            <div class="child-info">
+              <h3>{{ child.first_name }} {{ child.last_name }}</h3>
+              <p class="age">
+                <i class="fa-solid fa-cake-candles"></i>
+                {{ child.age }} god.
+              </p>
+              @if (child.medical_restrictions) {
+              <p class="medical">
+                <i class="fa-solid fa-notes-medical"></i>
+                {{ child.medical_restrictions }}
+              </p>
+              } @if (child.note) {
+              <p class="note">
+                <i class="fa-solid fa-sticky-note"></i>
+                {{ child.note }}
+              </p>
+              }
+            </div>
+            <div class="child-actions">
+              <button class="btn-edit" (click)="openEditForm(child)" title="Izmeni">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn-delete" (click)="deleteChild(child.id)" title="Obriši">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fa-solid fa-child-reaching"></i>
+          </div>
+          <h3>Nemate dodatu decu</h3>
+          <p>Dodajte podatke o deci kako biste mogli da rezervišete aktivnosti.</p>
+          <button class="btn-add-large" (click)="openAddForm()">
+            <i class="fa-solid fa-plus"></i>
+            Dodaj dete
+          </button>
+        </div>
+        } }
+      </div>
+    </section>
+    } @if (activeTab() === 'reservations') {
+    <section class="reservations-section">
+      <div class="section-card">
+        <h2><i class="fa-solid fa-calendar-check"></i> Moje rezervacije</h2>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fa-solid fa-calendar-xmark"></i>
+          </div>
+          <h3>Nemate rezervacija</h3>
+          <p>Kada rezervišete aktivnost, pojaviće se ovde.</p>
+        </div>
+      </div>
+    </section>
+    }
+  </main>
+
+  <!-- Modal Form -->
+  @if (isFormVisible()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingChild() ? 'Izmeni podatke o detetu' : 'Dodaj novo dete' }}</h2>
+        <button class="btn-close" (click)="closeForm()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form (ngSubmit)="saveChild()">
+        <div class="form-group">
+          <label for="first_name">Ime</label>
+          <input
+            type="text"
+            id="first_name"
+            [(ngModel)]="childForm.first_name"
+            name="first_name"
+            required
+            autocomplete="off"
+            placeholder="Unesite ime"
+          />
+        </div>
+        <div class="form-group">
+          <label for="last_name">Prezime</label>
+          <input
+            type="text"
+            id="last_name"
+            [(ngModel)]="childForm.last_name"
+            name="last_name"
+            required
+            autocomplete="off"
+            placeholder="Unesite prezime"
+          />
+        </div>
+        <div class="form-group">
+          <label for="age">Godine starosti</label>
+          <input
+            type="number"
+            id="age"
+            [(ngModel)]="childForm.age"
+            name="age"
+            min="1"
+            max="18"
+            required
+            autocomplete="off"
+            placeholder="Unesite godine"
+          />
+        </div>
+        <div class="form-group">
+          <label for="medical_restrictions">Medicinska ograničenja</label>
+          <textarea
+            id="medical_restrictions"
+            [(ngModel)]="childForm.medical_restrictions"
+            name="medical_restrictions"
+            rows="3"
+            placeholder="Alergije, zdravstvena stanja, dijeta..."
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="note">Napomena</label>
+          <textarea
+            id="note"
+            [(ngModel)]="childForm.note"
+            name="note"
+            rows="3"
+            placeholder="Dodatne informacije o detetu..."
+          ></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeForm()">Otkaži</button>
+          <button type="submit" class="btn-save">
+            <i class="fa-solid fa-check"></i>
+            {{ editingChild() ? 'Sačuvaj izmene' : 'Dodaj dete' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+</div>
