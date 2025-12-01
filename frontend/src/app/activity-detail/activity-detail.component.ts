@@ -1,11 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
-import { ReservationService } from '../services/reservation.service';
-import { ChildService, Child } from '../services/child.service';
+import { ModalService } from '../services/modal.service';
 import { environment } from '../../enviroments/enviroment';
 
 interface TimeSlot {
@@ -42,30 +40,20 @@ interface Activity {
 @Component({
   selector: 'app-activity-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './activity-detail.component.html',
   styleUrls: ['./activity-detail.component.scss'],
 })
 export class ActivityDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private apiService = inject(ApiService);
+  private modalService = inject(ModalService);
   public authService = inject(AuthService);
-  private reservationService = inject(ReservationService);
-  private childService = inject(ChildService);
 
   activity: Activity | null = null;
   isLoading = true;
   error: string | null = null;
   selectedSlot: TimeSlot | null = null;
-
-  // Modal properties
-  showReservationModal = false;
-  children: Child[] = [];
-  selectedChildId: number | null = null;
-  reservationNote = '';
-  isSubmitting = false;
-  reservationError: string | null = null;
-  reservationSuccess = false;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -137,75 +125,27 @@ export class ActivityDetailComponent implements OnInit {
     return this.formatDate(this.activity.time_slots[0].date);
   }
 
-  // ============ RESERVATION MODAL ============
-
   openReservationModal(): void {
-    this.reservationError = null;
-    this.reservationSuccess = false;
-    this.selectedChildId = null;
-    this.reservationNote = '';
+    if (!this.activity || !this.selectedSlot) return;
 
-    // Load children
-    this.childService.getMyChildren().subscribe({
-      next: (children) => {
-        this.children = children;
-        this.showReservationModal = true;
+    this.modalService.openReservationModal({
+      activity: {
+        id: this.activity.id,
+        name: this.activity.name,
+        price: this.activity.price,
+        age_from: this.activity.age_from,
+        age_to: this.activity.age_to,
       },
-      error: (err) => {
-        console.error('Greška pri učitavanju dece:', err);
-        this.reservationError = 'Greška pri učitavanju liste dece';
-        this.showReservationModal = true;
+      timeSlot: {
+        id: this.selectedSlot.id,
+        date: this.selectedSlot.date,
+        time_from: this.selectedSlot.time_from,
+        time_to: this.selectedSlot.time_to,
+        location: {
+          city: this.selectedSlot.location.city,
+          address: this.selectedSlot.location.address,
+        },
       },
     });
-  }
-
-  closeModal(): void {
-    this.showReservationModal = false;
-    this.reservationError = null;
-
-    // If reservation was successful, reload activity to update slots
-    if (this.reservationSuccess) {
-      this.reservationSuccess = false;
-      if (this.activity) {
-        this.loadActivity(this.activity.id);
-      }
-      this.selectedSlot = null;
-    }
-  }
-
-  getEligibleChildren(): Child[] {
-    if (!this.activity) return this.children;
-    return this.children.filter(
-      (child) => child.age >= this.activity!.age_from && child.age <= this.activity!.age_to
-    );
-  }
-
-  submitReservation(): void {
-    if (!this.selectedChildId || !this.selectedSlot || !this.activity) {
-      this.reservationError = 'Molimo izaberite dete';
-      return;
-    }
-
-    this.isSubmitting = true;
-    this.reservationError = null;
-
-    this.reservationService
-      .createReservation({
-        child_id: this.selectedChildId,
-        activity_id: this.activity.id,
-        time_slot_id: this.selectedSlot.id,
-        note: this.reservationNote || undefined,
-      })
-      .subscribe({
-        next: (response) => {
-          this.isSubmitting = false;
-          this.reservationSuccess = true;
-        },
-        error: (err) => {
-          this.isSubmitting = false;
-          this.reservationError = err.error?.message || 'Greška pri kreiranju rezervacije';
-          console.error(err);
-        },
-      });
   }
 }

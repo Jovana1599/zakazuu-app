@@ -26,6 +26,7 @@ class ReservationController extends Controller
             'timeSlot.location:id,name,address,city',
             'institution:id,name'
         ])->orderBy('created_at', 'desc')->get();
+
         return response()->json($reservations);
     }
 
@@ -72,8 +73,18 @@ class ReservationController extends Controller
 
             DB::commit();
 
+            // Reload sa relacijama
+            $reservation->load([
+                'child:id,first_name,last_name,age',
+                'activity:id,name,category,price',
+                'timeSlot:id,date,time_from,time_to,capacity,booked',
+                'timeSlot.location:id,name,address,city',
+                'institution:id,name'
+            ]);
+
             return response()->json([
-                'message' => 'Rezervacija uspešno otkazana.'
+                'message' => 'Rezervacija uspešno otkazana.',
+                'reservation' => $reservation
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

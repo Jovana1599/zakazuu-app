@@ -16,7 +16,9 @@
       >
         <i class="fa-solid fa-calendar-check"></i>
         <span>Moje rezervacije</span>
-        <span class="badge">3</span>
+        @if (pendingReservationsCount() > 0) {
+        <span class="badge">{{ pendingReservationsCount() }}</span>
+        }
       </button>
     </nav>
   </aside>
@@ -52,7 +54,7 @@
           <h2><i class="fa-solid fa-children"></i> Moja deca</h2>
           <button class="btn-add" (click)="openAddForm()">
             <i class="fa-solid fa-plus"></i>
-            Dodaj dete
+            Dodaj podatke o detetu
           </button>
         </div>
 
@@ -111,7 +113,7 @@
           <p>Dodajte podatke o deci kako biste mogli da rezervišete aktivnosti.</p>
           <button class="btn-add-large" (click)="openAddForm()">
             <i class="fa-solid fa-plus"></i>
-            Dodaj dete
+            Dodaj podatke o detetu
           </button>
         </div>
         } }
@@ -121,13 +123,104 @@
     <section class="reservations-section">
       <div class="section-card">
         <h2><i class="fa-solid fa-calendar-check"></i> Moje rezervacije</h2>
+
+        @if (isLoadingReservations()) {
+        <div class="loading">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Učitavanje rezervacija...
+        </div>
+        } @if (!isLoadingReservations()) { @if (hasReservations()) {
+        <div class="reservations-list">
+          @for (reservation of reservations(); track reservation.id) {
+          <div class="reservation-card" [class]="getStatusClass(reservation.status)">
+            <div class="reservation-status">
+              <span class="status-badge" [class]="getStatusClass(reservation.status)">
+                {{ getStatusText(reservation.status) }}
+              </span>
+            </div>
+
+            <div class="reservation-content">
+              <div class="reservation-main">
+                <h3 class="activity-name">{{ reservation.activity?.name }}</h3>
+                <p class="institution-name">
+                  <i class="fa-solid fa-building"></i>
+                  {{ reservation.institution?.name }}
+                </p>
+              </div>
+
+              <div class="reservation-details">
+                <div class="detail-item">
+                  <i class="fa-solid fa-child"></i>
+                  <span
+                    >{{ reservation.child?.first_name }} {{ reservation.child?.last_name }}</span
+                  >
+                </div>
+                @if (reservation.time_slot) {
+                <div class="detail-item">
+                  <i class="fa-solid fa-calendar"></i>
+                  <span>{{ formatDate(reservation.time_slot.date) }}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fa-solid fa-clock"></i>
+                  <span
+                    >{{ formatTime(reservation.time_slot.time_from) }} -
+                    {{ formatTime(reservation.time_slot.time_to) }}</span
+                  >
+                </div>
+                @if (reservation.time_slot.location) {
+                <div class="detail-item">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <span
+                    >{{ reservation.time_slot.location.city }},
+                    {{ reservation.time_slot.location.address }}</span
+                  >
+                </div>
+                } }
+              </div>
+
+              @if (reservation.note) {
+              <div class="reservation-note">
+                <i class="fa-solid fa-sticky-note"></i>
+                {{ reservation.note }}
+              </div>
+              }
+            </div>
+
+            <div class="reservation-actions">
+              @if (reservation.status === 'pending' || reservation.status === 'confirmed') {
+              <button
+                class="btn-cancel-reservation"
+                (click)="cancelReservation(reservation.id)"
+                title="Otkaži rezervaciju"
+              >
+                <i class="fa-solid fa-xmark"></i>
+                Otkaži
+              </button>
+              }
+              <a
+                [routerLink]="['/activities', reservation.activity_id]"
+                class="btn-view-activity"
+                title="Pogledaj aktivnost"
+              >
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
         <div class="empty-state">
           <div class="empty-icon">
             <i class="fa-solid fa-calendar-xmark"></i>
           </div>
           <h3>Nemate rezervacija</h3>
           <p>Kada rezervišete aktivnost, pojaviće se ovde.</p>
+          <a routerLink="/activities" class="btn-add-large">
+            <i class="fa-solid fa-search"></i>
+            Pretraži aktivnosti
+          </a>
         </div>
+        } }
       </div>
     </section>
     }

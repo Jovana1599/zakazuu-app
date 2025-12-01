@@ -7,6 +7,7 @@ import {
   ChildService,
   UpdateChildRequest,
 } from '../services/child.service';
+import { ReservationService } from '../services/reservation.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, of, tap } from 'rxjs';
 
@@ -14,17 +15,23 @@ import { catchError, of, tap } from 'rxjs';
 export class ProfileFacade {
   private readonly _store = inject(ProfileStore);
   private readonly _childService = inject(ChildService);
+  private readonly _reservationService = inject(ReservationService);
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _authService = inject(AuthService);
 
   readonly state = {
     user: this._store.user,
     children: this._store.children,
+    reservations: this._store.reservations,
     isLoading: this._store.isLoading,
+    isLoadingReservations: this._store.isLoadingReservations,
     error: this._store.error,
     activeTab: this._store.activeTab,
     hasChildren: this._store.hasChildren,
     childrenCount: this._store.childrenCount,
+    hasReservations: this._store.hasReservations,
+    reservationsCount: this._store.reservationsCount,
+    pendingReservationsCount: this._store.pendingReservationsCount,
     editingChild: this._store.editingChild,
     isFormVisible: this._store.isFormVisible,
   };
@@ -33,7 +40,9 @@ export class ProfileFacade {
     const user = this._authService.getCurrentUser();
     this._store.setUser(user);
     this.loadChildren();
+    this.loadReservations();
   }
+
   loadChildren(): void {
     this._store.setLoading(true);
     this._store.setError(null);
@@ -48,13 +57,51 @@ export class ProfileFacade {
           this._store.setLoading(false);
         }),
         catchError((error) => {
-          this._store.setError('Greška ');
+          this._store.setError('Greška pri učitavanju dece');
           this._store.setLoading(false);
           return of([]);
         })
       )
       .subscribe();
   }
+
+  loadReservations(): void {
+    this._store.setLoadingReservations(true);
+
+    this._reservationService
+      .getMyReservations()
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        tap((response: any) => {
+          const reservations = response.reservations || response;
+          this._store.setReservations(reservations);
+          this._store.setLoadingReservations(false);
+        }),
+        catchError((error) => {
+          console.error('Greška pri učitavanju rezervacija:', error);
+          this._store.setLoadingReservations(false);
+          return of([]);
+        })
+      )
+      .subscribe();
+  }
+
+  cancelReservation(id: number): void {
+    this._reservationService
+      .cancelReservation(id)
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        tap((response) => {
+          this._store.updateReservation(response.reservation);
+        }),
+        catchError((error) => {
+          console.error('Greška pri otkazivanju rezervacije:', error);
+          return of(null);
+        })
+      )
+      .subscribe();
+  }
+
   addChild(data: AddChildRequest) {
     this._store.setLoading(true);
     this._store.setError(null);

@@ -1,0 +1,147 @@
+@if (isOpen()) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Success state -->
+    @if (reservationSuccess) {
+    <div class="modal-success">
+      <div class="success-icon">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h2>Rezervacija uspešna!</h2>
+      <p>Vaša rezervacija je poslata. Ustanova će je uskoro pregledati.</p>
+      <button class="btn-primary" (click)="closeModal()">Zatvori</button>
+    </div>
+    } @else {
+    <!-- Form state -->
+    <div class="modal-form">
+      <div class="modal-header">
+        <h2>Rezervacija termina</h2>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Loading -->
+      @if (isLoading) {
+      <div class="modal-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Učitavanje...</p>
+      </div>
+      } @else {
+      <!-- Selected slot info -->
+      @if (timeSlot && activity) {
+      <div class="selected-slot-info">
+        <h3>{{ activity.name }}</h3>
+        <div class="info-row">
+          <i class="fa-solid fa-calendar"></i>
+          <span
+            >{{ formatDate(timeSlot.date) }}, {{ formatTime(timeSlot.time_from) }} -
+            {{ formatTime(timeSlot.time_to) }}</span
+          >
+        </div>
+        <div class="info-row">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>{{ timeSlot.location.city }}, {{ timeSlot.location.address }}</span>
+        </div>
+        <div class="info-row">
+          <i class="fa-solid fa-tag"></i>
+          <span>{{ activity.price | number : '1.0-0' }} RSD</span>
+        </div>
+      </div>
+      }
+
+      <!-- Child selection -->
+      <div class="form-section">
+        <label>Izaberite dete:</label>
+
+        @if (children.length === 0) {
+        <div class="alert alert-warning">
+          <i class="fa-solid fa-exclamation-triangle"></i>
+          <div>
+            <p>Nemate dodatu decu.</p>
+            <a routerLink="/profile" class="btn-link" (click)="closeModal()"
+              >Dodaj dete u profilu</a
+            >
+          </div>
+        </div>
+        } @if (children.length > 0 && getEligibleChildren().length === 0) {
+        <div class="alert alert-warning">
+          <i class="fa-solid fa-exclamation-triangle"></i>
+          <p>
+            Nijedno vaše dete ne odgovara uzrastu za ovu aktivnost ({{ activity?.age_from }} -
+            {{ activity?.age_to }} god.).
+          </p>
+        </div>
+        } @if (getEligibleChildren().length > 0) {
+        <div class="children-list">
+          @for (child of getEligibleChildren(); track child.id) {
+          <div
+            class="child-option"
+            [class.selected]="selectedChildId === child.id"
+            (click)="selectChild(child.id)"
+          >
+            <div class="child-avatar">
+              {{ child.first_name.charAt(0) }}
+            </div>
+            <div class="child-info">
+              <span class="child-name">{{ child.first_name }} {{ child.last_name }}</span>
+              <span class="child-age">{{ child.age }} godina</span>
+            </div>
+            @if (selectedChildId === child.id) {
+            <div class="check-mark">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Note -->
+      @if (getEligibleChildren().length > 0) {
+      <div class="form-section">
+        <label for="reservation-note">Napomena (opciono):</label>
+        <textarea
+          id="reservation-note"
+          [(ngModel)]="reservationNote"
+          placeholder="Npr. alergije, posebne potrebe..."
+          rows="3"
+        ></textarea>
+      </div>
+      }
+
+      <!-- Error message -->
+      @if (error) {
+      <div class="alert alert-error">
+        <i class="fa-solid fa-exclamation-circle"></i>
+        <span>{{ error }}</span>
+      </div>
+      }
+
+      <!-- Actions -->
+      @if (getEligibleChildren().length > 0) {
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeModal()">Otkaži</button>
+        <button
+          class="btn-primary"
+          [disabled]="!selectedChildId || isSubmitting"
+          (click)="submitReservation()"
+        >
+          @if (isSubmitting) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Slanje... } @else {
+          <i class="fa-solid fa-check"></i>
+          Potvrdi rezervaciju }
+        </button>
+      </div>
+      } @else {
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeModal()">Zatvori</button>
+      </div>
+      } }
+    </div>
+    }
+  </div>
+</div>
+}
