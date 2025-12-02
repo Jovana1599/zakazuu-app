@@ -1,1 +1,250 @@
-<p>activities.component works!</p>
+<div class="activities-page">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fa-solid fa-building"></i>
+        <span>Panel institucije</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/institution" class="nav-item">
+        <i class="fa-solid fa-home"></i>
+        <span>Početna</span>
+      </a>
+      <a routerLink="/institution/activities" class="nav-item active">
+        <i class="fa-solid fa-futbol"></i>
+        <span>Aktivnosti</span>
+      </a>
+      <a routerLink="/institution/locations" class="nav-item">
+        <i class="fa-solid fa-location-dot"></i>
+        <span>Lokacije</span>
+      </a>
+      <a routerLink="/institution/time-slots" class="nav-item">
+        <i class="fa-solid fa-calendar"></i>
+        <span>Termini</span>
+      </a>
+      <a routerLink="/institution/reservations" class="nav-item">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <span>Rezervacije</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-info">
+        <h1>Aktivnosti</h1>
+        <p>Upravljajte svojim aktivnostima</p>
+      </div>
+      <button class="btn-primary" (click)="openAddForm()">
+        <i class="fa-solid fa-plus"></i>
+        Nova aktivnost
+      </button>
+    </header>
+
+    @if (isLoading()) {
+    <div class="loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Učitavanje...</p>
+    </div>
+    } @else { @if (!hasActivities()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fa-solid fa-futbol"></i>
+      </div>
+      <h3>Nemate kreiranih aktivnosti</h3>
+      <p>Kreirajte svoju prvu aktivnost kako bi roditelji mogli da rezervišu termine.</p>
+      <button class="btn-primary" (click)="openAddForm()">
+        <i class="fa-solid fa-plus"></i>
+        Kreiraj aktivnost
+      </button>
+    </div>
+    } @else {
+    <div class="activities-grid">
+      @for (activity of activities(); track activity.id) {
+      <div class="activity-card">
+        <div class="card-image">
+          <img [src]="getImageUrl(activity.image_url)" [alt]="activity.name" />
+          <span class="category-badge">{{ activity.category }}</span>
+        </div>
+        <div class="card-body">
+          <h3>{{ activity.name }}</h3>
+          <p class="description">{{ activity.description }}</p>
+          <div class="meta">
+            <div class="meta-item">
+              <i class="fa-solid fa-users"></i>
+              <span>{{ activity.age_from }} - {{ activity.age_to }} god.</span>
+            </div>
+            <div class="meta-item">
+              <i class="fa-solid fa-tag"></i>
+              <span>{{ activity.price | number : '1.0-0' }} RSD</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a [routerLink]="['/institution/activities', activity.id, 'time-slots']" class="btn-link">
+            <i class="fa-solid fa-calendar"></i>
+            Termini
+          </a>
+          <div class="card-actions">
+            <button class="btn-icon" (click)="openEditForm(activity)" title="Izmeni">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button
+              class="btn-icon btn-delete"
+              (click)="deleteActivity(activity.id)"
+              title="Obriši"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    } }
+  </main>
+
+  <!-- Modal Form -->
+  @if (isFormVisible()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ selectedActivity() ? 'Izmeni aktivnost' : 'Nova aktivnost' }}</h2>
+        <button class="btn-close" (click)="closeForm()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveActivity()">
+        <div class="modal-body">
+          @if (error()) {
+          <div class="alert alert-error">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            {{ error() }}
+          </div>
+          }
+
+          <!-- Image Upload -->
+          <div class="form-group">
+            <label>Slika aktivnosti</label>
+            <div class="image-upload">
+              @if (imagePreview) {
+              <div class="image-preview">
+                <img [src]="imagePreview" alt="Preview" />
+                <button type="button" class="btn-remove-image" (click)="removeImage()">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              } @else {
+              <label class="upload-area" for="image-input">
+                <i class="fa-solid fa-cloud-upload-alt"></i>
+                <span>Kliknite za upload slike</span>
+                <small>JPG, PNG, GIF do 2MB</small>
+              </label>
+              }
+              <input
+                type="file"
+                id="image-input"
+                accept="image/*"
+                (change)="onImageSelected($event)"
+                hidden
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="name">Naziv aktivnosti *</label>
+            <input
+              type="text"
+              id="name"
+              [(ngModel)]="activityForm.name"
+              name="name"
+              required
+              placeholder="Npr. Škola fudbala"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="category">Kategorija *</label>
+            <select id="category" [(ngModel)]="activityForm.category" name="category" required>
+              <option value="">Izaberite kategoriju</option>
+              @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Opis *</label>
+            <textarea
+              id="description"
+              [(ngModel)]="activityForm.description"
+              name="description"
+              required
+              rows="4"
+              placeholder="Opišite aktivnost..."
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="age_from">Uzrast od *</label>
+              <input
+                type="number"
+                id="age_from"
+                [(ngModel)]="activityForm.age_from"
+                name="age_from"
+                required
+                min="1"
+                max="18"
+              />
+            </div>
+            <div class="form-group">
+              <label for="age_to">Uzrast do *</label>
+              <input
+                type="number"
+                id="age_to"
+                [(ngModel)]="activityForm.age_to"
+                name="age_to"
+                required
+                min="1"
+                max="18"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="price">Cena (RSD) *</label>
+            <input
+              type="number"
+              id="price"
+              [(ngModel)]="activityForm.price"
+              name="price"
+              required
+              min="0"
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeForm()">Otkaži</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Čuvanje... } @else {
+            <i class="fa-solid fa-check"></i>
+            {{ selectedActivity() ? 'Sačuvaj izmene' : 'Kreiraj aktivnost' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+</div>

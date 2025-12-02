@@ -5,7 +5,11 @@ import { RegisterComponent } from './register/register.component';
 import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
 import { ViewActivitiesComponent } from './view-activities/view-activities.component';
 import { ProfileComponent } from './profile/profile.component';
+import { LocationsComponent } from './institution/locations/location.component';
+// Institution
 import { DashboardComponent } from './institution/dashboard/dashboard.component';
+import { ActivitiesComponent } from './institution/activities/activities.component';
+
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
@@ -17,4 +21,6 @@ export const routes: Routes = [
 
   // Institution routes
   { path: 'institution', component: DashboardComponent },
+  { path: 'institution/activities', component: ActivitiesComponent },
+  { path: 'institution/locations', component: LocationsComponent },
 ];

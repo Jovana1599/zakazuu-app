@@ -1,0 +1,170 @@
+<div class="locations-page">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fa-solid fa-building"></i>
+        <span>Panel institucije</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/institution" class="nav-item">
+        <i class="fa-solid fa-home"></i>
+        <span>Početna</span>
+      </a>
+      <a routerLink="/institution/activities" class="nav-item">
+        <i class="fa-solid fa-futbol"></i>
+        <span>Aktivnosti</span>
+      </a>
+      <a routerLink="/institution/locations" class="nav-item active">
+        <i class="fa-solid fa-location-dot"></i>
+        <span>Lokacije</span>
+      </a>
+      <a routerLink="/institution/time-slots" class="nav-item">
+        <i class="fa-solid fa-calendar"></i>
+        <span>Termini</span>
+      </a>
+      <a routerLink="/institution/reservations" class="nav-item">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <span>Rezervacije</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-info">
+        <h1>Lokacije</h1>
+        <p>Upravljajte lokacijama na kojima se održavaju aktivnosti</p>
+      </div>
+      <button class="btn-primary" (click)="openAddForm()">
+        <i class="fa-solid fa-plus"></i>
+        Nova lokacija
+      </button>
+    </header>
+
+    @if (isLoading()) {
+    <div class="loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Učitavanje...</p>
+    </div>
+    } @else { @if (!hasLocations()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fa-solid fa-location-dot"></i>
+      </div>
+      <h3>Nemate kreiranih lokacija</h3>
+      <p>Dodajte lokacije na kojima se održavaju vaše aktivnosti.</p>
+      <button class="btn-primary" (click)="openAddForm()">
+        <i class="fa-solid fa-plus"></i>
+        Dodaj lokaciju
+      </button>
+    </div>
+    } @else {
+    <div class="locations-grid">
+      @for (location of locations(); track location.id) {
+      <div class="location-card">
+        <div class="location-icon">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+        <div class="location-info">
+          <h3>{{ location.name }}</h3>
+          <p class="address">
+            <i class="fa-solid fa-map-marker-alt"></i>
+            {{ location.address }}
+          </p>
+          <p class="city">
+            <i class="fa-solid fa-city"></i>
+            {{ location.city }}
+          </p>
+        </div>
+        <div class="location-actions">
+          <button class="btn-icon" (click)="openEditForm(location)" title="Izmeni">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="btn-icon btn-delete" (click)="deleteLocation(location.id)" title="Obriši">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    } }
+  </main>
+
+  <!-- Modal Form -->
+  @if (isFormVisible()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ selectedLocation() ? 'Izmeni lokaciju' : 'Nova lokacija' }}</h2>
+        <button class="btn-close" (click)="closeForm()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveLocation()">
+        <div class="modal-body">
+          @if (error()) {
+          <div class="alert alert-error">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            {{ error() }}
+          </div>
+          }
+
+          <div class="form-group">
+            <label for="name">Naziv lokacije *</label>
+            <input
+              type="text"
+              id="name"
+              [(ngModel)]="locationForm.name"
+              name="name"
+              required
+              placeholder="Npr. Sportska hala Voždovac"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="address">Adresa *</label>
+            <input
+              type="text"
+              id="address"
+              [(ngModel)]="locationForm.address"
+              name="address"
+              required
+              placeholder="Npr. Vojvode Stepe 128"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="city">Grad *</label>
+            <input
+              type="text"
+              id="city"
+              [(ngModel)]="locationForm.city"
+              name="city"
+              required
+              placeholder="Npr. Beograd"
+            />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeForm()">Otkaži</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Čuvanje... } @else {
+            <i class="fa-solid fa-check"></i>
+            {{ selectedLocation() ? 'Sačuvaj izmene' : 'Dodaj lokaciju' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+</div>

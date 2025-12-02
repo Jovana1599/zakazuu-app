@@ -106,15 +106,48 @@ export class InstitutionService {
     return this.api.get(`/institution/activities/${id}`);
   }
 
-  createActivity(data: CreateActivityRequest): Observable<{ message: string; activity: Activity }> {
-    return this.api.post('/institution/activities', data);
+  createActivity(
+    data: CreateActivityRequest,
+    image?: File
+  ): Observable<{ message: string; activity: Activity }> {
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('description', data.description);
+    formData.append('category', data.category);
+    formData.append('age_from', data.age_from.toString());
+    formData.append('age_to', data.age_to.toString());
+    formData.append('price', data.price.toString());
+
+    if (image) {
+      formData.append('image', image);
+    }
+
+    return this.api.post('/institution/activities', formData);
   }
 
   updateActivity(
     id: number,
-    data: Partial<CreateActivityRequest>
-  ): Observable<{ message: string; activity: Activity }> {
-    return this.api.put(`/institution/activities/${id}`, data);
+    data: Partial<CreateActivityRequest>,
+    image?: File
+  ): Observable<{
+    message: string;
+    activity: Activity;
+  }> {
+    const formData = new FormData();
+
+    if (data.name) formData.append('name', data.name);
+    if (data.description) formData.append('description', data.description);
+    if (data.category) formData.append('category', data.category);
+    if (data.age_from !== undefined) formData.append('age_from', data.age_from.toString());
+    if (data.age_to !== undefined) formData.append('age_to', data.age_to.toString());
+    if (data.price !== undefined) formData.append('price', data.price.toString());
+
+    if (image) {
+      formData.append('image', image);
+    }
+
+    formData.append('_method', 'PUT');
+    return this.api.post(`/institution/activities/${id}`, formData);
   }
 
   deleteActivity(id: number): Observable<{ message: string }> {

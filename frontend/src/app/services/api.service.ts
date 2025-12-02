@@ -19,15 +19,17 @@ export class ApiService {
 
   // POST request
   post<T>(endpoint: string, body: any): Observable<T> {
+    const isFormData = body instanceof FormData;
     return this.http.post<T>(`${this.apiUrl}${endpoint}`, body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders(isFormData),
     });
   }
 
   // PUT request
   put<T>(endpoint: string, body: any): Observable<T> {
+    const isFormData = body instanceof FormData;
     return this.http.put<T>(`${this.apiUrl}${endpoint}`, body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders(isFormData),
     });
   }
 
@@ -39,13 +41,16 @@ export class ApiService {
   }
 
   // Priprema headers sa tokenom
-  private getHeaders(): HttpHeaders {
+  private getHeaders(isFormData = false): HttpHeaders {
     const token = localStorage.getItem('access_token');
 
     let headers = new HttpHeaders({
-      'Content-Type': 'application/json',
       Accept: 'application/json',
     });
+
+    if (!isFormData) {
+      headers = headers.set('Content-Type', 'application/json');
+    }
 
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
