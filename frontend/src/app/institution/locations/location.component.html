@@ -1,37 +1,4 @@
 <div class="locations-page">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <i class="fa-solid fa-building"></i>
-        <span>Panel institucije</span>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a routerLink="/institution" class="nav-item">
-        <i class="fa-solid fa-home"></i>
-        <span>Početna</span>
-      </a>
-      <a routerLink="/institution/activities" class="nav-item">
-        <i class="fa-solid fa-futbol"></i>
-        <span>Aktivnosti</span>
-      </a>
-      <a routerLink="/institution/locations" class="nav-item active">
-        <i class="fa-solid fa-location-dot"></i>
-        <span>Lokacije</span>
-      </a>
-      <a routerLink="/institution/time-slots" class="nav-item">
-        <i class="fa-solid fa-calendar"></i>
-        <span>Termini</span>
-      </a>
-      <a routerLink="/institution/reservations" class="nav-item">
-        <i class="fa-solid fa-clipboard-list"></i>
-        <span>Rezervacije</span>
-      </a>
-    </nav>
-  </aside>
-
   <!-- Main Content -->
   <main class="main-content">
     <!-- Header -->
@@ -70,8 +37,7 @@
         <div class="location-icon">
           <i class="fa-solid fa-location-dot"></i>
         </div>
-        <div class="location-info">
-          <h3>{{ location.name }}</h3>
+        <div>
           <p class="address">
             <i class="fa-solid fa-map-marker-alt"></i>
             {{ location.address }}
@@ -114,18 +80,6 @@
             {{ error() }}
           </div>
           }
-
-          <div class="form-group">
-            <label for="name">Naziv lokacije *</label>
-            <input
-              type="text"
-              id="name"
-              [(ngModel)]="locationForm.name"
-              name="name"
-              required
-              placeholder="Npr. Sportska hala Voždovac"
-            />
-          </div>
 
           <div class="form-group">
             <label for="address">Adresa *</label>

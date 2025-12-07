@@ -31,16 +31,11 @@ export class LocationsComponent implements OnInit {
 
   // Form
   locationForm = {
-    name: '',
     address: '',
     city: '',
   };
 
   ngOnInit(): void {
-    if (!this.authService.isInstitution()) {
-      this.router.navigate(['/']);
-      return;
-    }
     this.facade.init();
   }
 
@@ -51,7 +46,6 @@ export class LocationsComponent implements OnInit {
 
   openEditForm(location: Location): void {
     this.locationForm = {
-      name: location.name,
       address: location.address,
       city: location.city,
     };
@@ -80,7 +74,6 @@ export class LocationsComponent implements OnInit {
 
   private resetForm(): void {
     this.locationForm = {
-      name: '',
       address: '',
       city: '',
     };

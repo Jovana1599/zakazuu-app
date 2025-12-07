@@ -1,40 +1,4 @@
 <div class="dashboard-page">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <i class="fa-solid fa-building"></i>
-        <span>Panel institucije</span>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a routerLink="/institution" class="nav-item active">
-        <i class="fa-solid fa-home"></i>
-        <span>Početna</span>
-      </a>
-      <a routerLink="/institution/activities" class="nav-item">
-        <i class="fa-solid fa-futbol"></i>
-        <span>Aktivnosti</span>
-      </a>
-      <a routerLink="/institution/locations" class="nav-item">
-        <i class="fa-solid fa-location-dot"></i>
-        <span>Lokacije</span>
-      </a>
-      <a routerLink="/institution/time-slots" class="nav-item">
-        <i class="fa-solid fa-calendar"></i>
-        <span>Termini</span>
-      </a>
-      <a routerLink="/institution/reservations" class="nav-item">
-        <i class="fa-solid fa-clipboard-list"></i>
-        <span>Rezervacije</span>
-        @if (pendingReservationsCount() > 0) {
-        <span class="badge">{{ pendingReservationsCount() }}</span>
-        }
-      </a>
-    </nav>
-  </aside>
-
   <!-- Main Content -->
   <main class="main-content">
     <!-- Header -->
@@ -43,10 +7,6 @@
         <h1>Dobrodošli, {{ user?.name }}</h1>
         <p>Upravljajte svojim aktivnostima i rezervacijama</p>
       </div>
-      <a routerLink="/institution/activities/new" class="btn-primary">
-        <i class="fa-solid fa-plus"></i>
-        Nova aktivnost
-      </a>
     </header>
 
     @if (isLoading()) {

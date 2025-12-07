@@ -1,6 +1,7 @@
 import { Injectable, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, catchError, of, tap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 import { DashboardStore } from './dashboard.store';
 import { InstitutionService } from '../services/institution.service';
 import { AuthService } from '../../services/auth.service';
@@ -11,6 +12,7 @@ export class DashboardFacade {
   private readonly institutionService = inject(InstitutionService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toastr = inject(ToastrService);
 
   // Expose state
   readonly state = {
@@ -78,6 +80,7 @@ export class DashboardFacade {
         error: (err) => {
           this.store.setError('Greška pri učitavanju podataka');
           this.store.setLoading(false);
+          this.toastr.error('Greška pri učitavanju podataka');
         },
       });
   }
@@ -89,9 +92,11 @@ export class DashboardFacade {
         takeUntilDestroyed(this.destroyRef),
         tap((res) => {
           this.store.updateReservation(res.reservation);
+          this.toastr.success('Rezervacija je uspešno odobrena!');
         }),
         catchError((err) => {
           console.error('Error approving reservation:', err);
+          this.toastr.error('Greška pri odobravanju rezervacije');
           return of(null);
         })
       )
@@ -105,9 +110,11 @@ export class DashboardFacade {
         takeUntilDestroyed(this.destroyRef),
         tap((res) => {
           this.store.updateReservation(res.reservation);
+          this.toastr.success('Rezervacija je odbijena.');
         }),
         catchError((err) => {
           console.error('Error rejecting reservation:', err);
+          this.toastr.error('Greška pri odbijanju rezervacije');
           return of(null);
         })
       )

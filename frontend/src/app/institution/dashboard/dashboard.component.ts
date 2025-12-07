@@ -31,10 +31,6 @@ export class DashboardComponent implements OnInit {
   readonly recentActivities = this.facade.state.recentActivities;
 
   ngOnInit(): void {
-    if (!this.authService.isInstitution()) {
-      this.router.navigate(['/']);
-      return;
-    }
     this.facade.init();
   }
 

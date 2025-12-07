@@ -1,6 +1,7 @@
 import { Injectable, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, of, tap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 import { ActivitiesStore } from './activities.store';
 import {
   InstitutionService,
@@ -13,6 +14,7 @@ export class ActivitiesFacade {
   private readonly store = inject(ActivitiesStore);
   private readonly institutionService = inject(InstitutionService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toastr = inject(ToastrService);
 
   // Expose state
   readonly state = {
@@ -45,6 +47,7 @@ export class ActivitiesFacade {
         catchError((err) => {
           this.store.setError('Greška pri učitavanju aktivnosti');
           this.store.setLoading(false);
+          this.toastr.error('Greška pri učitavanju aktivnosti');
           return of(null);
         })
       )
@@ -63,10 +66,12 @@ export class ActivitiesFacade {
           this.store.addActivity(res.activity);
           this.store.setSubmitting(false);
           this.store.setFormVisible(false);
+          this.toastr.success('Aktivnost je uspešno kreirana!');
         }),
         catchError((err) => {
           this.store.setError(err.error?.message || 'Greška pri kreiranju aktivnosti');
           this.store.setSubmitting(false);
+          this.toastr.error('Greška pri kreiranju aktivnosti');
           return of(null);
         })
       )
@@ -86,10 +91,12 @@ export class ActivitiesFacade {
           this.store.setSubmitting(false);
           this.store.setFormVisible(false);
           this.store.setSelectedActivity(null);
+          this.toastr.success('Aktivnost je uspešno ažurirana!');
         }),
         catchError((err) => {
           this.store.setError(err.error?.message || 'Greška pri ažuriranju aktivnosti');
           this.store.setSubmitting(false);
+          this.toastr.error('Greška pri ažuriranju aktivnosti');
           return of(null);
         })
       )
@@ -103,9 +110,11 @@ export class ActivitiesFacade {
         takeUntilDestroyed(this.destroyRef),
         tap(() => {
           this.store.removeActivity(id);
+          this.toastr.success('Aktivnost je uspešno obrisana!');
         }),
         catchError((err) => {
           this.store.setError('Greška pri brisanju aktivnosti');
+          this.toastr.error('Greška pri brisanju aktivnosti');
           return of(null);
         })
       )

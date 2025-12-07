@@ -39,7 +39,6 @@ export interface Location {
 }
 
 export interface CreateLocationRequest {
-  name: string;
   address: string;
   city: string;
 }
@@ -58,7 +57,7 @@ export interface TimeSlot {
   created_at: string;
   updated_at: string;
   activity?: { id: number; name: string };
-  location?: { id: number; name: string; address: string };
+  location?: { id: number; address: string; city: string };
 }
 
 export interface CreateTimeSlotRequest {
@@ -86,6 +85,21 @@ export interface Reservation {
   child?: { id: number; first_name: string; last_name: string; age: number };
   activity?: { id: number; name: string };
   time_slot?: TimeSlot;
+}
+
+export interface Review {
+  id: number;
+  user_id: number;
+  institution_user_id: number;
+  rating: number;
+  comment: string;
+  institution_response: string | null;
+  responded_at: string | null;
+  date: string;
+  approved: boolean;
+  created_at: string;
+  updated_at: string;
+  user?: { id: number; name: string };
 }
 
 // ===== SERVICE =====
@@ -223,5 +237,25 @@ export class InstitutionService {
 
   rejectReservation(id: number): Observable<{ message: string; reservation: Reservation }> {
     return this.api.post(`/institution/reservations/${id}/reject`, {});
+  }
+
+  getReviews(): Observable<{ reviews: Review[] }> {
+    return this.api.get('/institution/reviews');
+  }
+
+  getReview(id: number): Observable<{ review: Review }> {
+    return this.api.get(`/institution/reviews/${id}`);
+  }
+
+  respondToReview(id: number, response: string): Observable<{ message: string; review: Review }> {
+    return this.api.post(`/institution/reviews/${id}/respond`, { institution_response: response });
+  }
+
+  updateResponse(id: number, response: string): Observable<{ message: string; review: Review }> {
+    return this.api.put(`/institution/reviews/${id}/respond`, { institution_response: response });
+  }
+
+  deleteResponse(id: number): Observable<{ message: string }> {
+    return this.api.delete(`/institution/reviews/${id}/respond`);
   }
 }

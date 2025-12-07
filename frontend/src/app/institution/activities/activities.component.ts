@@ -58,10 +58,6 @@ export class ActivitiesComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if (!this.authService.isInstitution()) {
-      this.router.navigate(['/']);
-      return;
-    }
     this.facade.init();
   }
 
@@ -141,7 +137,15 @@ export class ActivitiesComponent implements OnInit {
       this.facade.deleteActivity(id);
     }
   }
-
+  isFormValid(): boolean {
+    return !!(
+      this.activityForm.name &&
+      this.activityForm.category &&
+      this.activityForm.age_from &&
+      this.activityForm.age_to &&
+      (this.activityForm.price || this.activityForm.price === 0)
+    );
+  }
   getImageUrl(imageUrl: string | null): string {
     if (!imageUrl) {
       return 'assets/images/placeholder.jpg';

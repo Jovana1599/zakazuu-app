@@ -1,0 +1,36 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <i class="fa-solid fa-building"></i>
+      <span>Panel institucije</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a
+      routerLink="/institution"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-item"
+    >
+      <i class="fa-solid fa-home"></i>
+      <span>Početna</span>
+    </a>
+    <a routerLink="/institution/schedule" routerLinkActive="active" class="nav-item">
+      <i class="fa-solid fa-calendar-days"></i>
+      <span>Raspored</span>
+    </a>
+    <a routerLink="/institution/reservations" routerLinkActive="active" class="nav-item">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <span>Rezervacije</span>
+    </a>
+    <a routerLink="/institution/activities" routerLinkActive="active" class="nav-item">
+      <i class="fa-solid fa-futbol"></i>
+      <span>Aktivnosti</span>
+    </a>
+    <a routerLink="/institution/locations" routerLinkActive="active" class="nav-item">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>Lokacije</span>
+    </a>
+  </nav>
+</aside>

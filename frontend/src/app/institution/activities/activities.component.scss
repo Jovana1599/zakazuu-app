@@ -1,87 +1,10 @@
-$primary: #6c5ae5;
-$primary-dark: #5a4bd1;
-$primary-light: #f0eefb;
-$yellow: #f9bd00;
-$green: #27ae60;
-$red: #e74c3c;
+@use 'variables' as *;
 
 .activities-page {
   display: flex;
   min-height: 100vh;
   background: #f5f5f5;
-  padding-top: 70px;
-}
-
-// Sidebar
-.sidebar {
-  width: 260px;
-  background: white;
-  border-right: 1px solid #e8e8e8;
-  min-height: calc(100vh - 70px);
-  position: fixed;
-  left: 0;
-  top: 70px;
-  bottom: 0;
-  overflow-y: auto;
-}
-
-.sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid #eee;
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    color: #000;
-
-    i {
-      font-size: 24px;
-      color: $primary;
-    }
-  }
-}
-
-.sidebar-nav {
-  padding: 16px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 10px;
-  color: #555;
-  text-decoration: none;
-  font-size: 14px;
-  transition: all 0.2s;
-
-  i {
-    font-size: 18px;
-    width: 24px;
-    text-align: center;
-  }
-
-  &:hover {
-    background: #f5f5f5;
-    color: #333;
-  }
-
-  &.active {
-    background: $primary-light;
-    color: $primary;
-    font-weight: 600;
-
-    i {
-      color: $primary;
-    }
-  }
+  padding-top: 50px;
 }
 
 // Main Content
@@ -360,100 +283,187 @@ $red: #e74c3c;
 // Modal
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 24px;
+  animation: fadeIn 0.2s ease-out;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// ==================== MODAL ====================
 .modal {
-  background: white;
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 24px;
   width: 100%;
-  max-width: 560px;
+  max-width: 520px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
 }
 
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ==================== HEADER ====================
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
+  align-items: flex-start;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, $primary-light 0%, #fff 100%);
   border-bottom: 1px solid #eee;
 
-  h2 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #000;
-    margin: 0;
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
-  .btn-close {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: #f5f5f5;
-    border-radius: 8px;
-    cursor: pointer;
+  .header-icon {
+    width: 56px;
+    height: 56px;
+    background: $primary;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    &:hover {
-      background: #eee;
+    i {
+      font-size: 24px;
+      color: #fff;
     }
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: #000;
+  }
+
+  p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+
+  .close-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #fff;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
     i {
-      font-size: 16px;
+      font-size: 18px;
       color: #666;
+    }
+
+    &:hover {
+      background: $red;
+
+      i {
+        color: #fff;
+      }
     }
   }
 }
 
+// ==================== BODY ====================
 .modal-body {
-  padding: 24px;
+  padding: 32px;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 60vh;
 }
 
-.modal-footer {
+// ==================== ALERT ====================
+.alert-error {
   display: flex;
+  align-items: center;
   gap: 12px;
-  justify-content: flex-end;
-  padding: 16px 24px;
-  border-top: 1px solid #eee;
+  padding: 16px 20px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+
+  i {
+    font-size: 18px;
+  }
 }
 
-// Form
+// ==================== FORM ====================
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 
   label {
-    display: block;
-    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
     font-weight: 600;
-    color: #000;
-    margin-bottom: 8px;
+    color: #333;
+    margin-bottom: 10px;
+
+    i {
+      color: $primary;
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+    }
   }
 
   input,
-  textarea,
-  select {
+  select,
+  textarea {
     width: 100%;
-    padding: 12px 14px;
+    padding: 16px 18px;
     border: 2px solid #e8e8e8;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.2s;
+    border-radius: 14px;
+    font-size: 15px;
+    transition: all 0.2s;
+    background: #fafafa;
+    box-sizing: border-box;
 
     &:focus {
       outline: none;
       border-color: $primary;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba($primary, 0.1);
     }
 
     &::placeholder {
@@ -463,142 +473,208 @@ $red: #e74c3c;
 
   textarea {
     resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
   }
 
   select {
     cursor: pointer;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 48px;
+  }
+
+  .hint {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #888;
+  }
+}
+.image-upload {
+  .image-preview {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border-radius: 14px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-remove-image {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+
+      &:hover {
+        background: $red;
+      }
+    }
+  }
+
+  .upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 20px;
+    border: 2px dashed #ddd;
+    border-radius: 14px;
+    background: #fafafa;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: $primary;
+      background: $primary-light;
+    }
+
+    i {
+      font-size: 32px;
+      color: #aaa;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    small {
+      font-size: 12px;
+      color: #999;
+    }
   }
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
+
+  .form-group {
+    margin-bottom: 24px;
+  }
 }
 
-// Image Upload
-.image-upload {
-  margin-top: 8px;
-}
-
-.upload-area {
+// ==================== FOOTER ====================
+.modal-footer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
-  border: 2px dashed #ddd;
+  gap: 16px;
+  justify-content: flex-end;
+  padding: 24px 32px;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+}
+
+.btn-cancel {
+  padding: 16px 28px;
+  background: #fff;
+  color: #555;
+  font-size: 15px;
+  font-weight: 600;
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    border-color: $primary;
-    background: $primary-light;
-  }
-
-  i {
-    font-size: 36px;
-    color: #bbb;
-    margin-bottom: 12px;
-  }
-
-  span {
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
-  }
-
-  small {
-    font-size: 12px;
-    color: #999;
-    margin-top: 4px;
+    background: #f5f5f5;
+    border-color: #ccc;
   }
 }
 
-.image-preview {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  border-radius: 12px;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .btn-remove-image {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-
-    &:hover {
-      background: $red;
-    }
-
-    i {
-      font-size: 14px;
-    }
-  }
-}
-
-// Alert
-.alert {
+.btn-submit {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  padding: 16px 32px;
+  background: $yellow;
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
 
-  &.alert-error {
-    background: #fde8e8;
-    color: #c53030;
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba($yellow, 0.4);
+  }
 
-    i {
-      color: $red;
-    }
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  i {
+    font-size: 16px;
   }
 }
 
-// Responsive
-@media (max-width: 900px) {
-  .sidebar {
-    display: none;
-  }
-
-  .main-content {
-    margin-left: 0;
+// ==================== RESPONSIVE ====================
+@media (max-width: 560px) {
+  .modal-overlay {
     padding: 16px;
   }
 
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+  .modal {
+    border-radius: 20px;
   }
 
-  .activities-grid {
-    grid-template-columns: 1fr;
-  }
-}
+  .modal-header {
+    padding: 24px;
 
-@media (max-width: 500px) {
+    .header-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+
+      i {
+        font-size: 20px;
+      }
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .modal-footer {
+    padding: 20px 24px;
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
   }
 }

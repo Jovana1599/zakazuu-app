@@ -1,6 +1,7 @@
 import { Injectable, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, of, tap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 import {
   InstitutionService,
   Location,
@@ -13,6 +14,7 @@ export class LocationsFacade {
   private readonly store = inject(LocationsStore);
   private readonly institutionService = inject(InstitutionService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toastr = inject(ToastrService);
 
   readonly state = {
     locations: this.store.locations,
@@ -44,6 +46,7 @@ export class LocationsFacade {
         catchError((err) => {
           this.store.setError('Greška pri učitavanju lokacija');
           this.store.setLoading(false);
+          this.toastr.error('Greška pri učitavanju lokacija');
           return of(null);
         })
       )
@@ -62,10 +65,12 @@ export class LocationsFacade {
           this.store.addLocation(res.location);
           this.store.setSubmitting(false);
           this.store.setFormVisible(false);
+          this.toastr.success('Lokacija je uspešno kreirana!');
         }),
         catchError((err) => {
           this.store.setError(err.error?.message || 'Greška pri kreiranju lokacije');
           this.store.setSubmitting(false);
+          this.toastr.error('Greška pri kreiranju lokacije');
           return of(null);
         })
       )
@@ -85,10 +90,12 @@ export class LocationsFacade {
           this.store.setSubmitting(false);
           this.store.setFormVisible(false);
           this.store.setSelectedLocation(null);
+          this.toastr.success('Lokacija je uspešno ažurirana!');
         }),
         catchError((err) => {
           this.store.setError(err.error?.message || 'Greška pri ažuriranju lokacije');
           this.store.setSubmitting(false);
+          this.toastr.error('Greška pri ažuriranju lokacije');
           return of(null);
         })
       )
@@ -102,9 +109,11 @@ export class LocationsFacade {
         takeUntilDestroyed(this.destroyRef),
         tap(() => {
           this.store.removeLocation(id);
+          this.toastr.success('Lokacija je uspešno obrisana!');
         }),
         catchError((err) => {
           this.store.setError('Greška pri brisanju lokacije');
+          this.toastr.error('Greška pri brisanju lokacije');
           return of(null);
         })
       )
