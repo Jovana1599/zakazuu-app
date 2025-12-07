@@ -17,7 +17,7 @@ class TimeSlotController extends Controller
     public function index()
     {
         $timeSlots = TimeSlot::where('institution_user_id', auth()->id())
-            ->with(['activity:id,name', 'location:id,name,address'])
+            ->with(['activity:id,name', 'location:id,address,city'])
             ->orderBy('date', 'desc')
             ->orderBy('time_from', 'asc')
             ->get();
@@ -33,7 +33,6 @@ class TimeSlotController extends Controller
      */
     public function store(Request $request)
     {
-        // Validacija
         $validated = $request->validate([
             'activity_id' => 'required|integer|exists:activities,id',
             'location_id' => 'required|integer|exists:locations,id',
@@ -44,17 +43,14 @@ class TimeSlotController extends Controller
             'available' => 'sometimes|boolean'
         ]);
 
-        // Proveri da aktivnost pripada ovoj ustanovi
         $activity = Activity::where('id', $validated['activity_id'])
             ->where('institution_user_id', auth()->id())
             ->firstOrFail();
 
-        // Proveri da lokacija pripada ovoj ustanovi
         $location = Location::where('id', $validated['location_id'])
             ->where('institution_user_id', auth()->id())
             ->firstOrFail();
 
-        // Kreiraj termin
         $timeSlot = TimeSlot::create([
             'activity_id' => $validated['activity_id'],
             'institution_user_id' => auth()->id(),
@@ -67,14 +63,14 @@ class TimeSlotController extends Controller
             'booked' => 0
         ]);
 
-        // Učitaj relacije
-        $timeSlot->load(['activity:id,name', 'location:id,name,address']);
+        $timeSlot->load(['activity:id,name', 'location:id,address,city']);
 
         return response()->json([
             'message' => 'Termin uspešno kreiran',
             'time_slot' => $timeSlot
         ], 201);
     }
+
     /**
      * Prikaz jednog termina
      * GET /api/institution/time-slots/{id}
@@ -83,25 +79,24 @@ class TimeSlotController extends Controller
     {
         $timeSlot = TimeSlot::where('id', $id)
             ->where('institution_user_id', auth()->id())
-            ->with(['activity:id,name', 'location:id,name,address', 'reservations'])
+            ->with(['activity:id,name', 'location:id,address,city', 'reservations'])
             ->firstOrFail();
 
         return response()->json([
             'time_slot' => $timeSlot
         ]);
     }
+
     /**
      * Izmena termina
      * PUT /api/institution/time-slots/{id}
      */
     public function update(Request $request, $id)
     {
-        // Pronađi termin koji pripada ovoj ustanovi
         $timeSlot = TimeSlot::where('id', $id)
             ->where('institution_user_id', auth()->id())
             ->firstOrFail();
 
-        // Validacija
         $validated = $request->validate([
             'activity_id' => 'sometimes|integer|exists:activities,id',
             'location_id' => 'sometimes|integer|exists:locations,id',
@@ -112,35 +107,33 @@ class TimeSlotController extends Controller
             'available' => 'sometimes|boolean'
         ]);
 
-        // Ako menja activity proveri vlasništvo
         if (isset($validated['activity_id'])) {
             Activity::where('id', $validated['activity_id'])
                 ->where('institution_user_id', auth()->id())
                 ->firstOrFail();
         }
 
-        // Ako menja location proveri vlasništvo
         if (isset($validated['location_id'])) {
             Location::where('id', $validated['location_id'])
                 ->where('institution_user_id', auth()->id())
                 ->firstOrFail();
         }
 
-        // Ažuriraj termin
         $timeSlot->update($validated);
+        $timeSlot->load(['activity:id,name', 'location:id,address,city']);
 
         return response()->json([
             'message' => 'Termin uspešno ažuriran',
             'time_slot' => $timeSlot
         ]);
     }
+
     /**
      * Brisanje termina
      * DELETE /api/institution/time-slots/{id}
      */
     public function destroy($id)
     {
-        // Pronađi termin koji pripada ovoj ustanovi
         $timeSlot = TimeSlot::where('id', $id)
             ->where('institution_user_id', auth()->id())
             ->firstOrFail();

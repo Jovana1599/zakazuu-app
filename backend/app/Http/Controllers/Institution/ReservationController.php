@@ -16,19 +16,18 @@ class ReservationController extends Controller
     {
         $query = Reservation::where('institution_user_id', auth()->id())
             ->with([
-                'parent:id,name,email',
                 'child:id,first_name,last_name,age',
                 'activity:id,name',
-                'timeSlot:id,date,time_from,time_to'
-            ])
-            ->orderBy('created_at', 'desc');
+                'timeSlot',
+                'parent:id,name,email'
+            ]);
 
-        // Filter po statusu ako je poslat
+        // Filter po statusu ako je prosleđen
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
 
-        $reservations = $query->get();
+        $reservations = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'reservations' => $reservations
@@ -43,21 +42,13 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::where('id', $id)
             ->where('institution_user_id', auth()->id())
-            ->with([
-                'parent:id,name,email',
-                'child:id,first_name,last_name,age,medical_restrictions',
-                'activity:id,name,description,price',
-                'timeSlot:id,date,time_from,time_to,capacity,booked',
-                'timeSlot.location:id,name,address,city'
-            ])
+            ->with(['child', 'activity', 'timeSlot', 'parent:id,name,email'])
             ->firstOrFail();
 
         return response()->json([
             'reservation' => $reservation
         ]);
     }
-
-
 
     /**
      * Odobravanje rezervacije
@@ -67,17 +58,16 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::where('id', $id)
             ->where('institution_user_id', auth()->id())
+            ->where('status', 'pending')
             ->firstOrFail();
 
-        // Može se odobriti samo pending rezervacija
-        if ($reservation->status !== 'pending') {
-            return response()->json([
-                'message' => 'Samo pending rezervacije mogu biti odobrene'
-            ], 422);
-        }
-
-        // Odobri rezervaciju
         $reservation->update(['status' => 'confirmed']);
+
+        $reservation->load([
+            'child:id,first_name,last_name',
+            'activity:id,name',
+            'timeSlot'
+        ]);
 
         return response()->json([
             'message' => 'Rezervacija uspešno odobrena',
@@ -93,21 +83,21 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::where('id', $id)
             ->where('institution_user_id', auth()->id())
-            ->with('timeSlot')
+            ->where('status', 'pending')
             ->firstOrFail();
 
-        // Može se odbiti samo pending rezervacija
-        if ($reservation->status !== 'pending') {
-            return response()->json([
-                'message' => 'Samo pending rezervacije mogu biti odbijene'
-            ], 422);
-        }
-
-        // Odbij rezervaciju
         $reservation->update(['status' => 'rejected']);
 
-        // Smanji booked broj u time slot
-        $reservation->timeSlot->decrement('booked');
+        // Oslobodi mesto u time slotu
+        if ($reservation->timeSlot) {
+            $reservation->timeSlot->decrement('booked');
+        }
+
+        $reservation->load([
+            'child:id,first_name,last_name',
+            'activity:id,name',
+            'timeSlot'
+        ]);
 
         return response()->json([
             'message' => 'Rezervacija odbijena',

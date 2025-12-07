@@ -9,6 +9,7 @@ use App\Http\Controllers\Parent\ReservationController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Institution\ActivityController as InstitutionActivityController;
 use App\Http\Controllers\Institution\ReservationController as InstitutionReservationController;
+use App\Http\Controllers\Institution\ReviewController as InstitutionReviewController;
 use App\Http\Controllers\Institution\LocationController;
 use App\Http\Controllers\Institution\TimeSlotController;
 use App\Http\Controllers\Parent\ReviewController;
@@ -69,35 +70,62 @@ Route::middleware('auth:sanctum')->prefix('parent')->group(function () {
 Route::get('/activities', [ActivityController::class, 'index']);
 Route::get('/activities/{id}', [ActivityController::class, 'show']);
 Route::get('/institutions/{institutionId}/reviews', [ReviewController::class, 'getInstitutionReviews']);
-
-
-// Institution rute (samo za ustanove)
-Route::middleware('auth:sanctum')->prefix('institution')->group(function () {
+Route::middleware([
+  'auth:sanctum',
+  'institution'
+])->prefix('institution')->group(function () {
   // Upravljanje aktivnostima
   Route::get('/activities', [InstitutionActivityController::class, 'index']);
   Route::post('/activities', [InstitutionActivityController::class, 'store']);
   Route::get('/activities/{id}', [InstitutionActivityController::class, 'show']);
   Route::put('/activities/{id}', [InstitutionActivityController::class, 'update']);
-  Route::delete('/activities/{id}', [InstitutionActivityController::class, 'destroy']);
+  Route::delete('/activities/{id}', [
+    InstitutionActivityController::class,
+    'destroy'
+  ]);
 
-
+  // Lokacije
   Route::get('/locations', [LocationController::class, 'index']);
   Route::post('/locations', [LocationController::class, 'store']);
   Route::get('/locations/{id}', [LocationController::class, 'show']);
   Route::put('/locations/{id}', [LocationController::class, 'update']);
   Route::delete('/locations/{id}', [LocationController::class, 'destroy']);
 
+  // Time slots
   Route::get('/time-slots', [TimeSlotController::class, 'index']);
   Route::post('/time-slots', [TimeSlotController::class, 'store']);
   Route::get('/time-slots/{id}', [TimeSlotController::class, 'show']);
   Route::put('/time-slots/{id}', [TimeSlotController::class, 'update']);
   Route::delete('/time-slots/{id}', [TimeSlotController::class, 'destroy']);
 
-
-
   // Upravljanje rezervacijama
   Route::get('/reservations', [InstitutionReservationController::class, 'index']);
-  Route::get('/reservations/{id}', [InstitutionReservationController::class, 'show']);
-  Route::post('/reservations/{id}/approve', [InstitutionReservationController::class, 'approve']);
-  Route::post('/reservations/{id}/reject', [InstitutionReservationController::class, 'reject']);
+  Route::get('/reservations/{id}', [
+    InstitutionReservationController::class,
+    'show'
+  ]);
+  Route::post(
+    '/reservations/{id}/approve',
+    [InstitutionReservationController::class, 'approve']
+  );
+  Route::post('/reservations/{id}/reject', [
+    InstitutionReservationController::class,
+    'reject'
+  ]);
+
+  // Recenzije - pregled i odgovaranje
+  Route::get('/reviews', [InstitutionReviewController::class, 'index']);
+  Route::get('/reviews/{id}', [InstitutionReviewController::class, 'show']);
+  Route::post('/reviews/{id}/respond', [
+    InstitutionReviewController::class,
+    'respond'
+  ]);
+  Route::put('/reviews/{id}/respond', [
+    InstitutionReviewController::class,
+    'updateResponse'
+  ]);
+  Route::delete('/reviews/{id}/respond', [
+    InstitutionReviewController::class,
+    'deleteResponse'
+  ]);
 });
