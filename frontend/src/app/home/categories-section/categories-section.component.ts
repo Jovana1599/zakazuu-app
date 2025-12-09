@@ -1,13 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
-interface Category {
-  id: string;
-  name: string;
-  icon: string;
-}
-
+import { CATEGORIES, Category } from '../../shared/categories.config';
 @Component({
   selector: 'app-categories-section',
   standalone: true,
@@ -16,22 +10,14 @@ interface Category {
   styleUrl: './categories-section.component.scss',
 })
 export class CategoriesSectionComponent {
-  categories: Category[] = [
-    { id: 'birthday', name: 'Rođendani', icon: '🎂' },
-    { id: 'plivanje', name: 'Plivanje', icon: '🏊' },
-    { id: 'skating', name: 'Klizanje', icon: '⛸️' },
-    { id: 'education', name: 'Edukacija', icon: '📚' },
-    { id: 'art', name: 'Umetnost', icon: '🎨' },
-    { id: 'football', name: 'Fudbal', icon: '⚽' },
-    { id: 'dance', name: 'Ples', icon: '💃' },
-    { id: 'nature', name: 'Boravak u prirodi', icon: '🌲' },
-  ];
+  private readonly router = inject(Router);
 
-  constructor(private router: Router) {}
+  // Prvih 8 kategorija za prikaz
+  categories: Category[] = CATEGORIES.slice(0, 8);
 
-  onCategoryClick(name: string): void {
+  onCategoryClick(category: Category): void {
     this.router.navigate(['/activities'], {
-      queryParams: { category: name },
+      queryParams: { category: category.id },
     });
   }
 }

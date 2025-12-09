@@ -1,13 +1,11 @@
 .categories-section {
   background: white;
   padding: 50px 40px;
-  margin-top: 50px;
-  margin-bottom: 50px;
 
   h2 {
     font-size: 20px;
     color: #333;
-    margin: 0 0 32px 0;
+    margin: 0 0 40px 0;
     font-weight: 500;
   }
 }
@@ -48,4 +46,26 @@
   margin-bottom: 10px;
   background: white;
   transition: all 0.2s;
+}
+
+.category-name {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .categories-section {
+    padding: 40px 20px;
+
+    h2 {
+      margin-bottom: 30px;
+    }
+  }
+
+  .category-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
 }

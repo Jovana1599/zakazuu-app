@@ -3,7 +3,7 @@
 
   <div class="categories-grid">
     @for(category of categories; track category.id){
-    <div class="category-item" (click)="onCategoryClick(category.name)">
+    <div class="category-item" (click)="onCategoryClick(category)">
       <div class="category-icon">{{ category.icon }}</div>
       <span class="category-name">{{ category.name }}</span>
     </div>
