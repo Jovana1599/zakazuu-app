@@ -1,7 +1,7 @@
 @use 'variables' as *;
 
 .navbar {
-  background-color: #fff;
+  background-color: $yellow;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   position: fixed;
   top: 0;
@@ -11,9 +11,8 @@
 }
 
 .navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 20px;
+  margin-right: 50px;
   height: 70px;
   display: flex;
   align-items: center;
@@ -51,7 +50,7 @@
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 24px;
 }
 
 // Link za ustanove
@@ -60,98 +59,53 @@
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: color 0.2s;
 
   &:hover {
     color: $primary;
   }
 }
 
-// Dugme za registraciju
-.btn-register {
-  background-color: transparent;
-  color: $primary;
-  padding: 10px 24px;
-  border-radius: 8px;
-  border: 2px solid $primary;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: $primary;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba($primary, 0.4);
-  }
-}
-
-// Dugme za login
-.btn-login {
-  background-color: $primary;
-  color: #fff;
-  padding: 10px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: $primary-dark;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba($primary, 0.4);
-  }
-}
-
-// Korpa
-.cart {
-  position: relative;
-  cursor: pointer;
-  color: #666;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: $primary;
-  }
-}
-
-.cart-count {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background-color: $yellow;
-  color: #000;
-  font-size: 11px;
-  font-weight: 700;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+// Nav item (Moje rezervacije, Odjavi se)
+.nav-item {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  i {
+    font-size: 16px;
+    color: #555;
+    transition: color 0.2s;
+  }
+
+  &:hover {
+    color: $primary;
+
+    i {
+      color: $primary;
+    }
+  }
 }
 
-// User menu
-.user-menu {
+// User info
+.user-info {
   display: flex;
   align-items: center;
   gap: 10px;
-  position: relative;
+  text-decoration: none;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 8px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s;
 
   &:hover {
     background-color: $primary-light;
-  }
-
-  &:hover .dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
   }
 }
 
@@ -174,57 +128,62 @@
   font-size: 14px;
 }
 
-// Dropdown
-.dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  min-width: 200px;
-  padding: 8px 0;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: all 0.2s ease;
-}
-
-.user-menu:hover .dropdown,
-.dropdown:hover {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 12px 20px;
-  color: #333;
+// Dugme za registraciju
+.btn-register {
+  background-color: transparent;
+  color: $primary;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 2px solid $primary;
   text-decoration: none;
+  font-weight: 600;
   font-size: 14px;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  box-sizing: border-box;
+  transition: all 0.2s;
 
   &:hover {
-    background-color: $primary-light;
-    color: $primary;
+    background-color: $primary;
+    color: #fff;
+  }
+}
+
+// Dugme za login
+.btn-login {
+  background-color: $primary;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: $primary-dark;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 16px;
   }
 
-  &.logout {
-    color: $red;
-    border-top: 1px solid #eee;
-    margin-top: 8px;
-    padding-top: 12px;
+  .institution-link,
+  .user-name {
+    display: none;
+  }
 
-    &:hover {
-      background-color: #fef5f5;
-      color: $red;
-    }
+  .nav-item span {
+    display: none;
+  }
+
+  .navbar-right {
+    gap: 16px;
+  }
+
+  .btn-register,
+  .btn-login {
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }

@@ -25,48 +25,27 @@
 
       <!-- Ako JESTE ulogovan -->
       @if (authService.isLoggedIn()) {
-      <!-- Korpa - samo za roditelje -->
+      <!-- Moje rezervacije - samo za roditelje -->
       @if (authService.isParent()) {
-      <div class="cart">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        <span class="cart-count">0</span>
-      </div>
+      <a routerLink="/parent/reservations" class="nav-item">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Moje rezervacije</span>
+      </a>
       }
 
-      <!-- User menu -->
-      <div class="user-menu">
+      <!-- User info -->
+      <a routerLink="/parent/profile" class="user-info">
         <div class="avatar">
           {{ authService.getCurrentUser()?.name?.charAt(0)?.toUpperCase() }}
         </div>
         <span class="user-name">{{ authService.getCurrentUser()?.name }}</span>
+      </a>
 
-        <!-- Dropdown -->
-        <div class="dropdown">
-          @if (authService.isParent()) {
-          <a routerLink="/profile" class="dropdown-item">Moj profil</a>
-          <a routerLink="/my-bookings" class="dropdown-item">Moje rezervacije</a>
-          } @if (authService.isInstitution()) {
-          <a routerLink="/institution" class="dropdown-item">Panel institucije</a>
-          } @if (authService.isAdmin()) {
-          <a routerLink="/admin/dashboard" class="dropdown-item">Admin panel</a>
-          }
-          <button (click)="logout()" class="dropdown-item logout">Odjavi se</button>
-        </div>
-      </div>
+      <!-- Odjavi se -->
+      <a (click)="logout()" class="nav-item">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Odjavi se</span>
+      </a>
       }
     </div>
   </div>

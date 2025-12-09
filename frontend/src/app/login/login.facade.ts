@@ -39,9 +39,9 @@ export class LoginFacade {
     if (this.authService.isParent()) {
       this.router.navigate(['/home']);
     } else if (this.authService.isInstitution()) {
-      this.router.navigate(['/institution/dashboard']);
+      this.router.navigate(['/institution']);
     } else if (this.authService.isAdmin()) {
-      this.router.navigate(['/admin/dashboard']);
+      this.router.navigate(['/admin']);
     } else {
       this.router.navigate(['/home']);
     }
