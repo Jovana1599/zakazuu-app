@@ -7,6 +7,7 @@ import { ActivitiesFacade } from './activities.facade';
 import { AuthService } from '../../services/auth.service';
 import { Activity } from '../services/institution.service';
 import { environment } from '../../../enviroments/enviroment';
+import { CATEGORIES } from '../../shared/categories.config';
 
 @Component({
   selector: 'app-activities',
@@ -44,18 +45,8 @@ export class ActivitiesComponent implements OnInit {
   selectedImage: File | null = null;
   imagePreview: string | null = null;
 
-  // Categories
-  categories = [
-    'Sport',
-    'Muzika',
-    'Umetnost',
-    'Edukacija',
-    'Jezici',
-    'Ples',
-    'Nauka',
-    'Tehnologija',
-    'Ostalo',
-  ];
+  // Categories - koristi shared config
+  categories = CATEGORIES;
 
   ngOnInit(): void {
     this.facade.init();
@@ -154,6 +145,11 @@ export class ActivitiesComponent implements OnInit {
       return imageUrl;
     }
     return `${environment.apiUrl.replace('/api', '')}${imageUrl}`;
+  }
+
+  getCategoryName(categoryId: string): string {
+    const category = CATEGORIES.find(c => c.id === categoryId);
+    return category?.name || categoryId;
   }
 
   private resetForm(): void {

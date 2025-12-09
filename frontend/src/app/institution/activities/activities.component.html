@@ -1,8 +1,5 @@
-<div class="activities-page">
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Header -->
-    <header class="page-header">
+<!-- Header -->
+<header class="page-header">
       <div class="header-info">
         <h1>Aktivnosti</h1>
         <p>Upravljajte svojim aktivnostima</p>
@@ -36,7 +33,7 @@
       <div class="activity-card">
         <div class="card-image">
           <img [src]="getImageUrl(activity.image_url)" [alt]="activity.name" />
-          <span class="category-badge">{{ activity.category }}</span>
+          <span class="category-badge">{{ getCategoryName(activity.category) }}</span>
         </div>
         <div class="card-body">
           <h3>{{ activity.name }}</h3>
@@ -73,10 +70,9 @@
       </div>
       }
     </div>
-    } }
-  </main>
+} }
 
-  <!-- Modal Form -->
+<!-- Modal Form -->
   @if (isFormVisible()) {
   <div class="modal-overlay" (click)="closeForm()">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -166,8 +162,8 @@
             </label>
             <select id="category" [(ngModel)]="activityForm.category" name="category" required>
               <option value="">Izaberite kategoriju</option>
-              @for (cat of categories; track cat) {
-              <option [value]="cat">{{ cat }}</option>
+              @for (cat of categories; track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
               }
             </select>
           </div>
@@ -253,4 +249,3 @@
     </div>
   </div>
   }
-</div>
