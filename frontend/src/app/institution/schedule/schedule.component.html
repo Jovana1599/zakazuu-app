@@ -1,0 +1,154 @@
+<header class="page-header">
+      <div class="header-info">
+        <h1>Raspored</h1>
+        <p>Pregledajte i upravljajte terminima vaših aktivnosti</p>
+      </div>
+    </header>
+
+    @if (isLoading()) {
+    <div class="loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Učitavanje...</p>
+    </div>
+    } @else {
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label>Aktivnost:</label>
+        <select (change)="onActivityFilterChange($event)">
+          <option value="">Sve aktivnosti</option>
+          @for (activity of activities(); track activity.id) {
+          <option [value]="activity.id">{{ activity.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Lokacija:</label>
+        <select (change)="onLocationFilterChange($event)">
+          <option value="">Sve lokacije</option>
+          @for (location of locations(); track location.id) {
+          <option [value]="location.id">{{ location.address }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="schedule-layout">
+      <!-- Calendar Panel -->
+      <section class="calendar-panel">
+        <div class="calendar-nav">
+          <button class="nav-btn" (click)="previousMonth()">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <h2>{{ currentMonth() }}</h2>
+          <button class="nav-btn" (click)="nextMonth()">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <button class="today-btn" (click)="goToToday()">Danas</button>
+        </div>
+
+        <div class="calendar">
+          <div class="weekdays">
+            <span>Pon</span>
+            <span>Uto</span>
+            <span>Sri</span>
+            <span>Čet</span>
+            <span>Pet</span>
+            <span>Sub</span>
+            <span>Ned</span>
+          </div>
+          <div class="days">
+            @for (day of calendarDays(); track day.date.getTime()) {
+            <button
+              class="day"
+              [class.other-month]="!day.isCurrentMonth"
+              [class.selected]="isSelected(day.date)"
+              [class.today]="isToday(day.date)"
+              [class.has-slots]="day.hasSlots"
+              [disabled]="!day.isCurrentMonth"
+              (click)="selectDate(day)"
+            >
+              <span class="day-num">{{ day.date.getDate() }}</span>
+              @if (day.hasSlots && day.isCurrentMonth) {
+              <span class="slot-count">{{ day.slotsCount }}</span>
+              }
+            </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Day Details Panel -->
+      <section class="day-panel">
+        @if (selectedDate()) {
+        <div class="day-header">
+          <h3>{{ formatSelectedDate() }}</h3>
+          <button class="add-btn" (click)="openAddTimeSlotModal()">
+            <i class="fa-solid fa-plus"></i>
+            Dodaj termin
+          </button>
+        </div>
+
+        @if (selectedDateSlots().length === 0) {
+        <div class="empty-day">
+          <i class="fa-regular fa-calendar-xmark"></i>
+          <p>Nema termina za ovaj dan</p>
+          <button (click)="openAddTimeSlotModal()">Dodaj prvi termin</button>
+        </div>
+        } @else {
+        <div class="slots-list">
+          @for (slot of selectedDateSlots(); track slot.id) {
+          <article class="slot-card" [class.full]="isFullyBooked(slot)">
+            <div class="slot-time">
+              <i class="fa-regular fa-clock"></i>
+              {{ formatTime(slot.time_from) }} - {{ formatTime(slot.time_to) }}
+            </div>
+
+            <div class="slot-details">
+              <p class="activity-name">
+                <i class="fa-solid fa-futbol"></i>
+                {{ slot.activity?.name || getActivityName(slot.activity_id) }}
+              </p>
+              <p class="location">
+                <i class="fa-solid fa-location-dot"></i>
+                {{ slot.location?.address || getLocationAddress(slot.location_id) }}
+              </p>
+            </div>
+
+            <div class="slot-capacity">
+              <div class="capacity-bar">
+                <div
+                  class="fill"
+                  [style.width.%]="((slot.booked || 0) / slot.capacity) * 100"
+                ></div>
+              </div>
+              <span class="capacity-text">
+                {{ slot.booked || 0 }}/{{ slot.capacity }}
+                @if (isFullyBooked(slot)) {
+                <span class="badge-full">Popunjeno</span>
+                } @else {
+                <span class="available">({{ getAvailableSpots(slot) }} slobodno)</span>
+                }
+              </span>
+            </div>
+
+            <button class="delete-btn" (click)="deleteTimeSlot(slot.id)" title="Obriši">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </article>
+          }
+        </div>
+        } } @else {
+        <div class="no-selection">
+          <i class="fa-regular fa-hand-pointer"></i>
+          <p>Izaberite dan u kalendaru</p>
+        </div>
+        }
+      </section>
+    </div>
+}
+
+<!-- Modal -->
+@if (timeSlotModalOpen()) {
+<app-add-time-slot-modal />
+}

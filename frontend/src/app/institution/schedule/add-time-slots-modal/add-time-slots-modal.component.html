@@ -1,0 +1,116 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal">
+    <!-- Header -->
+    <header class="modal-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <i class="fa-solid fa-calendar-plus"></i>
+        </div>
+        <div>
+          <h2>Novi termin</h2>
+          <p>Kreirajte novi termin za aktivnost</p>
+        </div>
+      </div>
+      <button type="button" class="close-btn" (click)="close()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </header>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        <!-- Error Alert -->
+        @if (error()) {
+        <div class="alert-error">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>{{ error() }}</span>
+        </div>
+        }
+
+        <!-- Activity -->
+        <div class="form-group">
+          <label for="activity">
+            <i class="fa-solid fa-futbol"></i>
+            Aktivnost
+          </label>
+          <select id="activity" [(ngModel)]="form.activity_id" name="activity_id">
+            <option [value]="0" disabled>Izaberite aktivnost</option>
+            @for (activity of modalData()?.activities; track activity.id) {
+            <option [value]="activity.id">{{ activity.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+          <label for="location">
+            <i class="fa-solid fa-location-dot"></i>
+            Lokacija
+          </label>
+          <select id="location" [(ngModel)]="form.location_id" name="location_id">
+            <option [value]="0" disabled>Izaberite lokaciju</option>
+            @for (location of modalData()?.locations; track location.id) {
+            <option [value]="location.id">{{ location.address }}, {{ location.city }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group">
+          <label for="date">
+            <i class="fa-solid fa-calendar"></i>
+            Datum
+          </label>
+          <input type="date" id="date" [(ngModel)]="form.date" name="date" />
+        </div>
+
+        <!-- Time Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="time_from">
+              <i class="fa-solid fa-clock"></i>
+              Početak
+            </label>
+            <input type="time" id="time_from" [(ngModel)]="form.time_from" name="time_from" />
+          </div>
+          <div class="form-group">
+            <label for="time_to">
+              <i class="fa-solid fa-clock"></i>
+              Kraj
+            </label>
+            <input type="time" id="time_to" [(ngModel)]="form.time_to" name="time_to" />
+          </div>
+        </div>
+
+        <!-- Capacity -->
+        <div class="form-group">
+          <label for="capacity">
+            <i class="fa-solid fa-users"></i>
+            Kapacitet (broj mesta)
+          </label>
+          <input
+            type="number"
+            id="capacity"
+            [(ngModel)]="form.capacity"
+            name="capacity"
+            min="1"
+            placeholder="10"
+          />
+          <span class="hint">Maksimalan broj dece koji mogu da se prijave</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="close()">Otkaži</button>
+        <button type="submit" class="btn-submit" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Čuvanje... } @else {
+          <i class="fa-solid fa-check"></i>
+          Kreiraj termin }
+        </button>
+      </footer>
+    </form>
+  </div>
+</div>

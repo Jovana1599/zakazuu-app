@@ -1,0 +1,142 @@
+<div class="calendar-page">
+  <main class="main-content">
+    <div class="calendar-container">
+      <header class="calendar-header">
+        <div>
+          <h1>Kalendar aktivnosti</h1>
+          <p>Pregled potvrđenih rezervacija</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-today" (click)="facade.goToToday()">
+            <i class="fa-solid fa-calendar-day"></i> Danas
+          </button>
+          <div class="view-toggle">
+            <button [class.active]="s.viewMode() === 'month'" (click)="facade.setViewMode('month')">
+              Mesec
+            </button>
+            <button [class.active]="s.viewMode() === 'week'" (click)="facade.setViewMode('week')">
+              Nedelja
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="calendar-nav">
+        <button class="nav-btn" (click)="facade.navigate('prev')">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <h2>{{ s.viewMode() === 'month' ? s.currentMonth() : s.weekRange() }}</h2>
+        <button class="nav-btn" (click)="facade.navigate('next')">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      @if (s.isLoading()) {
+      <div class="loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Učitavanje...</p>
+      </div>
+      } @else {
+      <div class="calendar-wrapper">
+        <div class="calendar-grid" [class.week-view]="s.viewMode() === 'week'">
+          <div class="weekday-header">
+            @for (day of facade.weekDayNames; track day) {
+            <div class="weekday">{{ day }}</div>
+            }
+          </div>
+
+          <div class="days-grid">
+            @for (day of (s.viewMode() === 'month' ? s.calendarDays() : s.weekDays()); track
+            day.date.getTime()) {
+            <div
+              class="day-cell"
+              [class.other-month]="!day.isCurrentMonth"
+              [class.today]="day.isToday"
+              [class.selected]="s.selectedDate()?.getTime() === day.date.getTime()"
+              [class.week-cell]="s.viewMode() === 'week'"
+              (click)="facade.selectDay(day)"
+            >
+              @if (s.viewMode() === 'week') {
+              <div class="week-day-header">
+                <span class="day-name">{{
+                  facade.weekDayNames[day.date.getDay() === 0 ? 6 : day.date.getDay() - 1]
+                }}</span>
+                <span class="day-number">{{ day.date.getDate() }}</span>
+              </div>
+              <div class="week-events">
+                @for (res of day.reservations; track res.id) {
+                <div
+                  class="week-event"
+                  [style.border-left-color]="facade.getChildColor(res.child_id)"
+                >
+                  <span class="event-time">{{
+                    facade.formatTime(res.time_slot?.time_from || '')
+                  }}</span>
+                  <span class="event-name">{{ res.activity?.name }}</span>
+                  <span class="event-child">{{ res.child?.first_name }}</span>
+                </div>
+                }
+              </div>
+              } @else {
+              <span class="day-number">{{ day.date.getDate() }}</span>
+              @if (day.reservations.length > 0) {
+              <div class="day-events">
+                @for (res of day.reservations.slice(0, 3); track res.id) {
+                <div
+                  class="event-dot"
+                  [style.background-color]="facade.getChildColor(res.child_id)"
+                ></div>
+                } @if (day.reservations.length > 3) {
+                <span class="more-events">+{{ day.reservations.length - 3 }}</span>
+                }
+              </div>
+              } }
+            </div>
+            }
+          </div>
+        </div>
+
+        @if (s.selectedDate()) {
+        <div class="day-details">
+          <h3><i class="fa-solid fa-calendar-day"></i> {{ facade.formatSelectedDate() }}</h3>
+          @if (s.selectedDayReservations().length === 0) {
+          <div class="no-events">
+            <i class="fa-regular fa-calendar-xmark"></i>
+            <p>Nema aktivnosti</p>
+          </div>
+          } @else {
+          <div class="events-list">
+            @for (res of s.selectedDayReservations(); track res.id) {
+            <div class="event-card" [style.border-left-color]="facade.getChildColor(res.child_id)">
+              <div class="event-time-block">
+                <i class="fa-solid fa-clock"></i>
+                {{ facade.formatTime(res.time_slot?.time_from || '') }} -
+                {{ facade.formatTime(res.time_slot?.time_to || '') }}
+              </div>
+              <h4>{{ res.activity?.name }}</h4>
+              <div class="event-meta">
+                <span
+                  class="child-tag"
+                  [style.background-color]="facade.getChildColor(res.child_id)"
+                >
+                  <i class="fa-solid fa-child"></i>
+                  {{ res.child?.first_name }}
+                </span>
+                @if (res.time_slot?.location) {
+                <span class="location"
+                  ><i class="fa-solid fa-location-dot"></i>
+                  {{ res.time_slot?.location?.address }}</span
+                >
+                }
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </main>
+</div>
