@@ -1,8 +1,5 @@
-<div class="locations-page">
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Header -->
-    <header class="page-header">
+<!-- Header -->
+<header class="page-header">
       <div class="header-info">
         <h1>Lokacije</h1>
         <p>Upravljajte lokacijama na kojima se održavaju aktivnosti</p>
@@ -58,10 +55,9 @@
       </div>
       }
     </div>
-    } }
-  </main>
+} }
 
-  <!-- Modal Form -->
+<!-- Modal Form -->
   @if (isFormVisible()) {
   <div class="modal-overlay" (click)="closeForm()">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -121,4 +117,3 @@
     </div>
   </div>
   }
-</div>

@@ -1,10 +1,32 @@
-.institution-layout {
+:host {
   display: flex;
   min-height: 100vh;
+  padding-top: 70px;
+  background: #f5f5f5;
 }
 
-.main-content {
+.content {
   flex: 1;
-  padding: 20px;
-  margin-left: 250px;
+  margin-left: 260px;
+  padding: 30px 40px;
+  width: calc(100% - 260px);
+  max-width: calc(100% - 260px);
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin-left: 30px;
+}
+
+@media (max-width: 900px) {
+  :host {
+    flex-direction: column;
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 20px;
+    width: 100%;
+    max-width: 100%;
+  }
 }

@@ -1,18 +1,5 @@
 @use 'variables' as *;
 
-.locations-page {
-  display: flex;
-  min-height: 100vh;
-  background: #f8f9fa;
-  padding-top: 70px;
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 260px;
-  padding: 32px;
-}
-
 // Header
 .page-header {
   display: flex;
@@ -127,7 +114,7 @@
     transform: translateY(-2px);
   }
 
-  .card-icon {
+  .location-icon {
     width: 56px;
     height: 56px;
     background: $primary-light;
@@ -143,38 +130,39 @@
     }
   }
 
-  .card-content {
-    flex: 1;
-    min-width: 0;
+  .address {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 6px;
 
-    .address {
-      font-size: 16px;
-      font-weight: 700;
-      color: #333;
-      margin: 0 0 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .city {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    i {
       font-size: 14px;
-      color: #666;
-      margin: 0;
-
-      i {
-        font-size: 12px;
-        color: $primary;
-      }
+      color: $primary;
     }
   }
 
-  .card-actions {
+  .city {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+
+    i {
+      font-size: 12px;
+      color: $primary;
+    }
+  }
+
+  .location-actions {
     display: flex;
     gap: 8px;
+    margin-left: auto;
   }
 }
 
@@ -188,19 +176,16 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  background: $primary-light;
+  color: $primary;
 
   i {
     font-size: 14px;
   }
 
-  &.btn-edit {
-    background: #e8f4fd;
-    color: #3498db;
-
-    &:hover {
-      background: #3498db;
-      color: #fff;
-    }
+  &:hover {
+    background: $primary;
+    color: #fff;
   }
 
   &.btn-delete {
@@ -301,7 +286,7 @@
     margin: 0;
   }
 
-  .close-btn {
+  .btn-close {
     width: 40px;
     height: 40px;
     border: none;
@@ -406,7 +391,7 @@
   flex-shrink: 0;
 }
 
-.btn-cancel {
+.btn-secondary {
   padding: 16px 28px;
   background: #fff;
   color: #555;
@@ -423,7 +408,7 @@
   }
 }
 
-.btn-submit {
+.modal-footer .btn-primary {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -451,11 +436,6 @@
 
 // Responsive
 @media (max-width: 900px) {
-  .main-content {
-    margin-left: 0;
-    padding: 20px;
-  }
-
   .page-header {
     flex-direction: column;
     gap: 16px;

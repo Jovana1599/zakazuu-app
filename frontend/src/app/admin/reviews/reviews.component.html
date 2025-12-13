@@ -1,0 +1,64 @@
+<div class="reviews-page">
+  <div class="page-header">
+    <h1>Recenzije</h1>
+    <span class="count">{{ state.reviewsCount() }} recenzija</span>
+  </div>
+
+  <!-- Search -->
+  <div class="filters">
+    <div class="search-box">
+      <i class="fa-solid fa-search"></i>
+      <input
+        type="text"
+        placeholder="Pretraži po korisniku, ustanovi ili tekstu..."
+        (input)="onSearch($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (state.isLoading()) {
+  <div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Učitavanje...</span>
+  </div>
+  }
+
+  <!-- Reviews list -->
+  @if (!state.isLoading() && state.reviews().length > 0) {
+  <div class="reviews-list">
+    @for (review of state.reviews(); track review.id) {
+    <div class="review-card">
+      <div class="review-header">
+        <div class="user-info">
+          <span class="user-name">{{ review.user?.name || 'Nepoznat' }}</span>
+          <i class="fa-solid fa-arrow-right"></i>
+          <span class="institution-name">{{ review.institution?.name || 'Nepoznata ustanova' }}</span>
+        </div>
+        <div class="rating">
+          @for (star of getStars(review.rating); track $index) {
+          <i class="fa-solid fa-star" [class.filled]="star === 1"></i>
+          }
+        </div>
+      </div>
+      <p class="review-comment">{{ review.comment }}</p>
+      <div class="review-footer">
+        <span class="date">{{ review.created_at | date:'dd.MM.yyyy' }}</span>
+        <button class="btn-delete" (click)="confirmDelete(review)">
+          <i class="fa-solid fa-trash"></i>
+          Obriši
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Empty -->
+  @if (!state.isLoading() && state.reviews().length === 0) {
+  <div class="empty">
+    <i class="fa-solid fa-star-half-stroke"></i>
+    <p>Nema recenzija</p>
+  </div>
+  }
+</div>

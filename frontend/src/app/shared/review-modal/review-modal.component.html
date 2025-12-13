@@ -1,0 +1,84 @@
+@if (isOpen()) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    @if (success) {
+    <div class="modal-success">
+      <div class="success-icon">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h2>Recenzija poslata!</h2>
+      <p>Hvala vam na vašem mišljenju.</p>
+      <button class="btn-primary" (click)="closeModal()">Zatvori</button>
+    </div>
+    } @else {
+    <div class="modal-form">
+      <div class="modal-header">
+        <h2>Ostavite recenziju</h2>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="institution-info">
+        <div class="institution-avatar">
+          {{ modalData()?.institutionName?.charAt(0)?.toUpperCase() }}
+        </div>
+        <span>{{ modalData()?.institutionName }}</span>
+      </div>
+
+      <div class="form-section">
+        <label>Vaša ocena</label>
+        <div class="star-rating">
+          @for (star of [1, 2, 3, 4, 5]; track star) {
+          <button
+            type="button"
+            class="star-btn"
+            [class.active]="star <= (hoverRating || rating)"
+            (click)="setRating(star)"
+            (mouseenter)="setHoverRating(star)"
+            (mouseleave)="setHoverRating(0)"
+          >
+            <i class="fa-solid fa-star"></i>
+          </button>
+          }
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label for="comment">Vaš komentar</label>
+        <textarea
+          id="comment"
+          [(ngModel)]="comment"
+          placeholder="Podelite vaše iskustvo..."
+          rows="4"
+        ></textarea>
+      </div>
+
+      @if (error) {
+      <div class="alert alert-error">
+        <i class="fa-solid fa-exclamation-circle"></i>
+        <span>{{ error }}</span>
+      </div>
+      }
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeModal()">Otkaži</button>
+        <button
+          class="btn-primary"
+          [disabled]="!rating || !comment.trim() || isSubmitting"
+          (click)="submitReview()"
+        >
+          @if (isSubmitting) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Slanje...
+          } @else {
+          <i class="fa-solid fa-paper-plane"></i>
+          Pošalji recenziju
+          }
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+}

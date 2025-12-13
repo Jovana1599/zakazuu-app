@@ -1,0 +1,144 @@
+<header class="page-header">
+    <div class="header-info">
+      <h1>Recenzije</h1>
+      <p>Pregledajte i odgovorite na recenzije roditelja</p>
+    </div>
+    @if (hasReviews()) {
+    <div class="rating-badge">
+      <i class="fa-solid fa-star"></i>
+      <span class="rating">{{ averageRating() }}</span>
+      <span class="count">({{ reviewsCount() }})</span>
+    </div>
+    }
+  </header>
+
+  @if (isLoading()) {
+  <div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p>Učitavanje...</p>
+  </div>
+  } @else { @if (!hasReviews()) {
+  <div class="empty-state">
+    <div class="empty-icon">
+      <i class="fa-solid fa-comments"></i>
+    </div>
+    <h3>Nemate recenzija</h3>
+    <p>Kada roditelji ostave recenziju, pojaviće se ovde.</p>
+  </div>
+  } @else {
+  <div class="reviews-list">
+    @for (review of reviews(); track review.id) {
+    <div class="review-card">
+      <div class="review-header">
+        <div class="reviewer-info">
+          <div class="reviewer-avatar">{{ review.user.name.charAt(0).toUpperCase() }}</div>
+          <div>
+            <span class="reviewer-name">{{ review.user.name }}</span>
+            <span class="review-date">{{ formatDate(review.created_at) }}</span>
+          </div>
+        </div>
+        <div class="review-rating">
+          @for (star of [1, 2, 3, 4, 5]; track star) {
+          <i class="fa-solid fa-star" [class.active]="star <= review.rating"></i>
+          }
+        </div>
+      </div>
+
+      <p class="review-comment">{{ review.comment }}</p>
+
+      @if (review.institution_response) {
+      <div class="institution-response">
+        <div class="response-header">
+          <div class="response-title">
+            <i class="fa-solid fa-reply"></i>
+            <span>Vaš odgovor</span>
+          </div>
+          <div class="response-actions">
+            <button class="btn-icon" (click)="openResponseModal(review)" title="Izmeni">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn-icon btn-delete" (click)="deleteResponse(review)" title="Obriši">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <p>{{ review.institution_response }}</p>
+      </div>
+      } @else {
+      <button class="btn-respond" (click)="openResponseModal(review)">
+        <i class="fa-solid fa-reply"></i>
+        Odgovori
+      </button>
+      }
+    </div>
+    }
+  </div>
+  } }
+
+  <!-- Response Modal -->
+  @if (isResponseModalVisible()) {
+  <div class="modal-overlay" (click)="closeResponseModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">
+            <i class="fa-solid fa-reply"></i>
+          </div>
+          <div>
+            <h2>{{ selectedReview()?.institution_response ? 'Izmeni odgovor' : 'Odgovori na recenziju' }}</h2>
+            <p>{{ selectedReview()?.user?.name }}</p>
+          </div>
+        </div>
+        <button type="button" class="close-btn" (click)="closeResponseModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <div class="original-review">
+          <div class="review-rating">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+            <i class="fa-solid fa-star" [class.active]="star <= (selectedReview()?.rating || 0)"></i>
+            }
+          </div>
+          <p>"{{ selectedReview()?.comment }}"</p>
+        </div>
+
+        @if (error()) {
+        <div class="alert-error">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>{{ error() }}</span>
+        </div>
+        }
+
+        <div class="form-group">
+          <label for="response">Vaš odgovor</label>
+          <textarea
+            id="response"
+            [(ngModel)]="responseText"
+            placeholder="Napišite odgovor..."
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeResponseModal()">Otkaži</button>
+        <button
+          type="button"
+          class="btn-submit"
+          [disabled]="isSubmitting() || !responseText.trim()"
+          (click)="submitResponse()"
+        >
+          @if (isSubmitting()) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Slanje...
+          } @else {
+          <i class="fa-solid fa-paper-plane"></i>
+          {{ selectedReview()?.institution_response ? 'Sačuvaj izmene' : 'Pošalji odgovor' }}
+          }
+        </button>
+      </footer>
+    </div>
+  </div>
+  }

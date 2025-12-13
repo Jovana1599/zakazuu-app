@@ -1,0 +1,77 @@
+@if (isOpen()) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>O ustanovi</h2>
+      <button class="btn-close" (click)="closeModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="institution-header">
+      <div class="institution-avatar">
+        {{ modalData()?.name?.charAt(0)?.toUpperCase() }}
+      </div>
+      <div class="institution-name-section">
+        <h3>{{ modalData()?.name }}</h3>
+        @if (modalData()?.rating) {
+        <div class="rating">
+          <i class="fa-solid fa-star"></i>
+          <span class="value">{{ modalData()?.rating }}</span>
+          <span class="count">({{ modalData()?.reviewCount }} recenzija)</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    @if (modalData()?.description) {
+    <div class="section">
+      <h4>Opis</h4>
+      <p>{{ modalData()?.description }}</p>
+    </div>
+    }
+
+    <div class="contact-section">
+      <h4>Kontakt</h4>
+
+      <div class="contact-item" (click)="sendEmail()">
+        <div class="contact-icon">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+        <div class="contact-info">
+          <span class="label">Email</span>
+          <span class="value">{{ modalData()?.email }}</span>
+        </div>
+      </div>
+
+      @if (modalData()?.phone) {
+      <div class="contact-item" (click)="callPhone()">
+        <div class="contact-icon">
+          <i class="fa-solid fa-phone"></i>
+        </div>
+        <div class="contact-info">
+          <span class="label">Telefon</span>
+          <span class="value">{{ modalData()?.phone }}</span>
+        </div>
+      </div>
+      }
+
+      @if (modalData()?.website) {
+      <div class="contact-item" (click)="openWebsite()">
+        <div class="contact-icon">
+          <i class="fa-solid fa-globe"></i>
+        </div>
+        <div class="contact-info">
+          <span class="label">Web sajt</span>
+          <span class="value link">{{ modalData()?.website }}</span>
+        </div>
+      </div>
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeModal()">Zatvori</button>
+    </div>
+  </div>
+</div>
+}
