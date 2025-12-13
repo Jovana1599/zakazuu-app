@@ -10,6 +10,8 @@
       <span> u kategoriji "{{ selectedCategoryName() }}"</span>
       } @if (selectedCity) {
       <span> u gradu "{{ selectedCity }}"</span>
+      } @if (selectedAge) {
+      <span> za uzrast {{ selectedAge }} god.</span>
       } @if (searchQuery) {
       <span> za "{{ searchQuery }}"</span>
       }
@@ -60,6 +62,27 @@
           <option [value]="cat.id">{{ cat.name }}</option>
           }
         </select>
+      </div>
+
+      <!-- Age -->
+      <div class="filter-group">
+        <label><i class="fas fa-child"></i> Uzrast deteta</label>
+        <select [(ngModel)]="selectedAge" (change)="applyFilters()">
+          <option value="">Svi uzrasti</option>
+          @for (age of ageOptions; track age.value) {
+          <option [value]="age.value">{{ age.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-group">
+        <label><i class="fas fa-coins"></i> Cena (RSD)</label>
+        <div class="price-inputs">
+          <input type="number" [(ngModel)]="minPrice" placeholder="Od" min="0" />
+          <span class="price-separator">-</span>
+          <input type="number" [(ngModel)]="maxPrice" placeholder="Do" min="0" />
+        </div>
       </div>
 
       <button class="btn-apply" (click)="applyFilters()">
