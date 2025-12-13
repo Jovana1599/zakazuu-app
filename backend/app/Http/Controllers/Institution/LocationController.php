@@ -32,7 +32,6 @@ class LocationController extends Controller
     {
         // Validacija
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:255'
         ]);
@@ -40,7 +39,6 @@ class LocationController extends Controller
         // Kreiraj lokaciju
         $location = Location::create([
             'institution_user_id' => auth()->id(),
-            'name' => $validated['name'],
             'address' => $validated['address'],
             'city' => $validated['city']
         ]);
@@ -78,7 +76,6 @@ class LocationController extends Controller
 
         // Validacija
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
             'address' => 'sometimes|string|max:255',
             'city' => 'sometimes|string|max:255'
         ]);
@@ -103,11 +100,10 @@ class LocationController extends Controller
             ->where('institution_user_id', auth()->id())
             ->firstOrFail();
 
-        $locationName = $location->name;
         $location->delete();
 
         return response()->json([
-            'message' => "Lokacija '{$locationName}' uspešno obrisana"
+            'message' => "Lokacija uspešno obrisana"
         ]);
     }
 }

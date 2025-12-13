@@ -4,7 +4,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ActivityController extends Controller
 {
@@ -46,30 +48,58 @@ class ActivityController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $activities = $query->orderBy('created_at', 'desc')->get();
+        $activities = $query->get();
+
+        // Dodaj prosečnu ocenu za svaku aktivnost (na osnovu recenzija institucije)
+        $institutionIds = $activities->pluck('institution_user_id')->unique();
+
+        $ratings = Review::select('institution_user_id', DB::raw('AVG(rating) as avg_rating'), DB::raw('COUNT(*) as review_count'))
+            ->whereIn('institution_user_id', $institutionIds)
+            ->where('approved', true)
+            ->groupBy('institution_user_id')
+            ->get()
+            ->keyBy('institution_user_id');
+
+        $activities = $activities->map(function ($activity) use ($ratings) {
+            $rating = $ratings->get($activity->institution_user_id);
+            $activity->rating = $rating ? round($rating->avg_rating, 1) : null;
+            $activity->review_count = $rating ? $rating->review_count : 0;
+            return $activity;
+        });
+
+        // Randomizuj redosled aktivnosti
+        $activities = $activities->shuffle();
 
         return response()->json([
-            'activities' => $activities
+            'activities' => $activities->values()
         ]);
     }
     public function show($id)
-    { {
-            $activity = Activity::with([
-                'institution:id,name,email', // Podaci ustanove
-                'timeSlots' => function ($query) {
-                    // Samo buduće termine koji su dostupni
-                    $query->where('date', '>=', now()->format('Y-m-d'))
-                        ->where('available', true)
-                        ->whereRaw('booked < capacity')
-                        ->orderBy('date', 'asc')
-                        ->orderBy('time_from', 'asc');
-                },
-                'timeSlots.location:id,address,city' // Lokacije termina
-            ])->findOrFail($id);
+    {
+        $activity = Activity::with([
+            'institution:id,name,email,phone,description,website', // Podaci ustanove
+            'timeSlots' => function ($query) {
+                // Samo buduće termine koji su dostupni
+                $query->where('date', '>=', now()->format('Y-m-d'))
+                    ->where('available', true)
+                    ->whereRaw('booked < capacity')
+                    ->orderBy('date', 'asc')
+                    ->orderBy('time_from', 'asc');
+            },
+            'timeSlots.location:id,address,city' // Lokacije termina
+        ])->findOrFail($id);
 
-            return response()->json([
-                'activity' => $activity
-            ]);
-        }
+        // Dodaj prosečnu ocenu institucije
+        $rating = Review::where('institution_user_id', $activity->institution_user_id)
+            ->where('approved', true)
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as review_count')
+            ->first();
+
+        $activity->rating = $rating->avg_rating ? round($rating->avg_rating, 1) : null;
+        $activity->review_count = $rating->review_count ?? 0;
+
+        return response()->json([
+            'activity' => $activity
+        ]);
     }
 }

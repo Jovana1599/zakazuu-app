@@ -17,7 +17,10 @@ use Illuminate\Http\Request;
               'name' => 'required|string|max:255',
               'email' => 'required|string|email|max:255|unique:users',
               'password' => 'required|string|min:6|confirmed',
-              'role_as' => 'required|integer|in:0,1,2', // 0=Parent, 1=Admin, 2=Institution
+              'role_as' => 'required|integer|in:0,2', // 0=Parent, 2=Institution
+              'phone' => 'nullable|string|max:30',
+              'description' => 'nullable|string|max:2000',
+              'website' => 'nullable|string|max:255',
           ]);
 
           $user = User::create([
@@ -25,6 +28,9 @@ use Illuminate\Http\Request;
               'email' => $validated['email'],
               'password' => bcrypt($validated['password']),
               'role_as' => $validated['role_as'],
+              'phone' => $validated['phone'] ?? null,
+              'description' => $validated['description'] ?? null,
+              'website' => $validated['website'] ?? null,
           ]);
 
           $token = $user->createToken('auth_token')->plainTextToken;
@@ -113,9 +119,9 @@ use Illuminate\Http\Request;
        */
       private function getRoleName($user)
       {
-          if ($user->isAdmin()) return 'Administrator';
           if ($user->isParent()) return 'Roditelj';
-          if ($user->isInstitution()) return 'Radnik ustanove';
+          if ($user->isInstitution()) return 'Ustanova';
+          if ($user->isAdmin()) return 'Administrator';
           return 'Unknown';
       }
   }
