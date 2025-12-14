@@ -68,6 +68,7 @@ namespace App\Http\Controllers\Admin;
           $validated = $request->validate([
               'name' => 'sometimes|string|max:255',
               'email' => 'sometimes|email|unique:users,email,' . $id,
+              'phone' => 'sometimes|nullable|string|max:30',
               'role_as' => 'sometimes|integer|in:0,1,2',
           ]);
 

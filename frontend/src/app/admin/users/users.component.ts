@@ -18,7 +18,7 @@ export class AdminUsersComponent implements OnInit {
   readonly state = this.facade.state;
 
   // Edit form
-  editForm = { name: '', email: '', role_as: 0 };
+  editForm = { name: '', email: '', phone: '', role_as: 0 };
 
   ngOnInit(): void {
     this.facade.init();
@@ -37,6 +37,7 @@ export class AdminUsersComponent implements OnInit {
     this.editForm = {
       name: user.name,
       email: user.email,
+      phone: user.phone || '',
       role_as: user.role_as,
     };
     this.facade.openEditModal(user);
