@@ -13,7 +13,12 @@ import { ScheduleComponent } from './institution/schedule/schedule.component';
 import { InstitutionReviewsComponent } from './institution/reviews/reviews.component';
 import { InstitutionComponent } from './institution/institution.component';
 import { DashboardComponent } from './institution/dashboard/dashboard.component';
-import { institutionGuard, parentGuard } from './services/auth.guard';
+import { institutionGuard, parentGuard, adminGuard } from './services/auth.guard';
+// Admin
+import { AdminComponent } from './admin/admin.component';
+import { AdminDashboardComponent } from './admin/dashboard/dashboard.component';
+import { AdminUsersComponent } from './admin/users/users.component';
+import { AdminReviewsComponent } from './admin/reviews/reviews.component';
 import { CalendarComponent } from './parent-panel/calendar-activity/calendar-activity.component';
 import { MyReservationsComponent } from './parent-panel/my-reservations/my-reservations.component';
 import { ParentPanelComponent } from './parent-panel/parent-panel';
@@ -51,6 +56,18 @@ export const routes: Routes = [
       { path: 'locations', component: LocationsComponent },
       { path: 'reservations', component: ReservationsComponent },
       { path: 'reviews', component: InstitutionReviewsComponent },
+    ],
+  },
+
+  // Admin routes
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [adminGuard],
+    children: [
+      { path: '', component: AdminDashboardComponent },
+      { path: 'users', component: AdminUsersComponent },
+      { path: 'reviews', component: AdminReviewsComponent },
     ],
   },
 ];
