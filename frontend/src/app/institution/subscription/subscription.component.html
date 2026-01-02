@@ -1,0 +1,116 @@
+<div class="subscription-page">
+  <h1>Članarina</h1>
+
+  <!-- Loading -->
+  @if (state.isLoading()) {
+    <div class="loading">Učitavanje...</div>
+  }
+
+  <!-- Current Subscription Status -->
+  @if (!state.isLoading()) {
+    <section class="current-subscription">
+      <h2>Trenutni status</h2>
+
+      @if (state.hasActiveSubscription()) {
+        <div class="subscription-card active">
+          <div class="subscription-header">
+            <span class="badge active">Aktivna</span>
+            <h3>{{ state.currentMembershipName() }}</h3>
+          </div>
+
+          <div class="subscription-details">
+            <div class="detail">
+              <span class="label">Ističe:</span>
+              <span class="value" [class.warning]="state.isNearExpiry()">
+                {{ formatDate(state.currentSubscription()?.ends_at ?? null) }}
+                @if (state.isNearExpiry()) {
+                  <span class="expiry-warning">(još {{ state.daysRemaining() }} dana)</span>
+                }
+              </span>
+            </div>
+
+            @if (state.usage()) {
+              <div class="detail">
+                <span class="label">Iskorišćeno aktivnosti:</span>
+                <span class="value">
+                  {{ state.usage()?.activities_used }} / {{ state.usage()?.activities_limit }}
+                </span>
+              </div>
+
+              <div class="usage-bar">
+                <div
+                  class="usage-fill"
+                  [style.width.%]="state.usagePercentage()"
+                  [class.warning]="state.usagePercentage() > 80"
+                ></div>
+              </div>
+            }
+          </div>
+
+          <button
+            class="btn btn-danger"
+            (click)="onCancel()"
+            [disabled]="state.isSubscribing()"
+          >
+            Otkaži članarinu
+          </button>
+        </div>
+      } @else {
+        <div class="subscription-card inactive">
+          <p>Nemate aktivnu članarinu. Izaberite jedan od paketa ispod.</p>
+        </div>
+      }
+    </section>
+
+    <!-- Available Memberships -->
+    <section class="memberships">
+      <h2>Dostupni paketi</h2>
+
+      <div class="memberships-grid">
+        @for (membership of state.memberships(); track membership.id) {
+          <div class="membership-card" [class.featured]="membership.is_featured">
+            @if (membership.is_featured) {
+              <span class="featured-badge">Preporučeno</span>
+            }
+
+            <h3>{{ membership.name }}</h3>
+
+            <div class="price">
+              {{ formatPrice(membership.price) }}
+              <span class="period">/ {{ membership.duration_days }} dana</span>
+            </div>
+
+            @if (membership.description) {
+              <p class="description">{{ membership.description }}</p>
+            }
+
+            <ul class="features">
+              <li>
+                <i class="fa fa-check"></i>
+                Do {{ membership.max_activities }} aktivnosti
+              </li>
+              <li>
+                <i class="fa fa-check"></i>
+                Do {{ membership.max_time_slots_per_activity }} termina po aktivnosti
+              </li>
+            </ul>
+
+            <button
+              class="btn btn-primary"
+              (click)="onSubscribe(membership)"
+              [disabled]="state.isSubscribing() || state.hasActiveSubscription()"
+            >
+              @if (state.isSubscribing()) {
+                Obrada...
+              } @else if (state.hasActiveSubscription()) {
+                Već imate aktivnu članarinu
+              } @else {
+                Izaberi paket
+              }
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

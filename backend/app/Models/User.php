@@ -72,4 +72,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class, 'institution_user_id');
     }
+
+    public function subscription()
+    {
+        return $this->hasOne(InstitutionSubscription::class, 'institution_user_id')
+            ->where('status', 'active');
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(InstitutionSubscription::class, 'institution_user_id');
+    }
+
+    public function hasActiveSubscription()
+    {
+        return $this->subscription && $this->subscription->isActive();
+    }
 }

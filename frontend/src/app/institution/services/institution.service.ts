@@ -31,7 +31,6 @@ export interface CreateActivityRequest {
 export interface Location {
   id: number;
   institution_user_id: number;
-  name: string;
   address: string;
   city: string;
   created_at: string;
@@ -100,6 +99,43 @@ export interface Review {
   created_at: string;
   updated_at: string;
   user?: { id: number; name: string };
+}
+
+export interface Membership {
+  id: number;
+  name: string;
+  description: string | null;
+  price: number;
+  duration_days: number;
+  max_activities: number;
+  max_time_slots_per_activity: number;
+  is_featured: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InstitutionSubscription {
+  id: number;
+  institution_user_id: number;
+  membership_id: number;
+  status: 'active' | 'inactive' | 'expired' | 'cancelled';
+  started_at: string | null;
+  ends_at: string | null;
+  payment_reference: string | null;
+  auto_renew: boolean;
+  created_at: string;
+  updated_at: string;
+  membership?: Membership;
+}
+
+export interface SubscriptionUsage {
+  activities_used: number;
+  activities_limit: number;
+  activities_remaining: number;
+  percentage_used: number;
+  days_remaining: number;
+  expires_at: string | null;
 }
 
 // ===== SERVICE =====
@@ -257,5 +293,40 @@ export class InstitutionService {
 
   deleteResponse(id: number): Observable<{ message: string }> {
     return this.api.delete(`/institution/reviews/${id}/respond`);
+  }
+
+  // ===== SUBSCRIPTION =====
+
+  getCurrentSubscription(): Observable<{
+    subscription: InstitutionSubscription | null;
+    has_active_subscription: boolean;
+  }> {
+    return this.api.get('/institution/subscription');
+  }
+
+  getMemberships(): Observable<{ memberships: Membership[] }> {
+    return this.api.get('/institution/memberships');
+  }
+
+  subscribe(
+    membershipId: number,
+    paymentReference?: string
+  ): Observable<{ message: string; subscription: InstitutionSubscription }> {
+    return this.api.post('/institution/subscription/subscribe', {
+      membership_id: membershipId,
+      payment_reference: paymentReference,
+    });
+  }
+
+  cancelSubscription(): Observable<{ message: string }> {
+    return this.api.post('/institution/subscription/cancel', {});
+  }
+
+  getSubscriptionUsage(): Observable<{ usage: SubscriptionUsage | null; message?: string }> {
+    return this.api.get('/institution/subscription/usage');
+  }
+
+  getSubscriptionHistory(): Observable<{ subscriptions: InstitutionSubscription[] }> {
+    return this.api.get('/institution/subscription/history');
   }
 }

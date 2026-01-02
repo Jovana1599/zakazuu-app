@@ -1,0 +1,250 @@
+@import '../../../styles/variables';
+
+.subscription-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 2rem;
+    color: $text-primary;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    color: $text-secondary;
+    font-size: 1.25rem;
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: $text-secondary;
+}
+
+.current-subscription {
+  margin-bottom: 3rem;
+}
+
+.subscription-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &.active {
+    border-left: 4px solid $green;
+  }
+
+  &.inactive {
+    border-left: 4px solid $yellow;
+    background: #fffbf0;
+
+    p {
+      margin: 0;
+      color: #856404;
+    }
+  }
+}
+
+.subscription-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  &.active {
+    background: rgba($green, 0.15);
+    color: $green;
+  }
+}
+
+.subscription-details {
+  margin-bottom: 1.5rem;
+
+  .detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid $border-color;
+
+    .label {
+      color: $text-secondary;
+    }
+
+    .value {
+      font-weight: 500;
+
+      &.warning {
+        color: $red;
+      }
+    }
+
+    .expiry-warning {
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
+  }
+}
+
+.usage-bar {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+
+  .usage-fill {
+    height: 100%;
+    background: $primary;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+
+    &.warning {
+      background: $yellow;
+    }
+  }
+}
+
+.memberships {
+  margin-top: 2rem;
+}
+
+.memberships-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.membership-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba($primary, 0.15);
+  }
+
+  &.featured {
+    border: 2px solid $primary;
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: $primary;
+      color: #fff;
+      padding: 0.25rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+  }
+
+  h3 {
+    margin: 0 0 1rem;
+    text-align: center;
+    color: $text-primary;
+  }
+
+  .price {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: $primary;
+    margin-bottom: 1rem;
+
+    .period {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: $text-secondary;
+    }
+  }
+
+  .description {
+    color: $text-secondary;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    flex-grow: 1;
+
+    li {
+      padding: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: $text-secondary;
+
+      i {
+        color: $primary;
+      }
+    }
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.1s;
+
+  &.btn-primary {
+    background: $primary;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: $primary-dark;
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  &.btn-danger {
+    background: $red;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: darken($red, 10%);
+    }
+
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}
