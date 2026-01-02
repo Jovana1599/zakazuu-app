@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -11,21 +12,46 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
-  errorMessage: string = '';
-  isLoading: boolean = false;
+  errorMessage = signal<string>('');
+  isLoading = signal(false);
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
+  registrationType = signal(0); // 0 = roditelj, 2 = ustanova
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     this.registerForm = this.fb.group(
       {
         name: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         password_confirmation: ['', [Validators.required]],
+        // Institution fields (optional)
+        phone: [''],
+        description: [''],
+        website: [''],
       },
       { validators: this.passwordMatchValidator }
     );
+  }
+
+  ngOnInit(): void {
+    // Proveri query param za ulogu
+    this.route.queryParams.pipe(take(1)).subscribe((params) => {
+      if (params['role'] === 'institution') {
+        this.registrationType.set(2);
+      }
+    });
+  }
+
+  selectRole(role: number): void {
+    this.registrationType.set(role);
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -34,34 +60,63 @@ export class RegisterComponent {
 
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
-    } else if (confirmPassword) {
+    } else if (confirmPassword && !confirmPassword.hasError('required')) {
       confirmPassword.setErrors(null);
     }
     return null;
   }
 
+  togglePassword(): void {
+    this.showPassword.update((v) => !v);
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword.update((v) => !v);
+  }
+
+  clearError(): void {
+    this.errorMessage.set('');
+  }
+
   onSubmit(): void {
     if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
 
-    const { name, email, password, password_confirmation } = this.registerForm.value;
+    const { name, email, password, password_confirmation, phone, description, website } =
+      this.registerForm.value;
 
-    // role_as = 0 za roditelja
-    this.authService.register(name, email, password, password_confirmation, 0).subscribe({
-      next: (response) => {
-        console.log('Registration successful', response);
-        this.router.navigate(['/home']);
-      },
-      error: (error) => {
-        console.error('Registration error', error);
-        this.errorMessage = error.error.message || 'Greška pri registraciji';
-        this.isLoading = false;
-      },
-    });
+    const registrationType = this.registrationType();
+
+    this.authService
+      .register(
+        name,
+        email,
+        password,
+        password_confirmation,
+        registrationType,
+        phone,
+        description,
+        website
+      )
+      .subscribe({
+        next: () => {
+          if (registrationType === 2) {
+            this.router.navigate(['/institution']);
+          } else {
+            this.router.navigate(['/home']);
+          }
+        },
+        error: (error) => {
+          console.error('Registration error', error);
+          this.errorMessage.set(error.error?.message || 'Greška pri registraciji');
+          this.isLoading.set(false);
+        },
+      });
   }
 
   get name() {

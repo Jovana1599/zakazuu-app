@@ -13,8 +13,6 @@ export const authGuard: CanActivateFn = () => {
   return false;
 };
 
-//Za institucije
-
 export const institutionGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -28,7 +26,7 @@ export const institutionGuard: CanActivateFn = () => {
   router.navigate(['/']);
   return false;
 };
-// Za parent rute
+
 export const parentGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -46,6 +44,24 @@ export const parentGuard: CanActivateFn = () => {
   return false;
 };
 
+// Za admin rute
+export const adminGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (!authService.isLoggedIn()) {
+    router.navigate(['/login']);
+    return false;
+  }
+
+  if (authService.isAdmin()) {
+    return true;
+  }
+
+  router.navigate(['/']);
+  return false;
+};
+
 // Sprečava ulogovane da idu na login/register
 export const guestGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -55,7 +71,9 @@ export const guestGuard: CanActivateFn = () => {
     return true;
   }
 
-  if (authService.isInstitution()) {
+  if (authService.isAdmin()) {
+    router.navigate(['/admin']);
+  } else if (authService.isInstitution()) {
     router.navigate(['/institution']);
   } else {
     router.navigate(['/home']);

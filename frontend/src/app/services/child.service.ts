@@ -36,17 +36,14 @@ export interface UpdateChildRequest {
 export class ChildService {
   constructor(private api: ApiService) {}
 
-  // Dohvatanje sve dece roditelja
   getMyChildren(): Observable<Child[]> {
     return this.api.get<Child[]>('/parent/children');
   }
 
-  // Dohvatanje jednog deteta
   getChild(id: number): Observable<Child> {
     return this.api.get<Child>(`/parent/children/${id}`);
   }
 
-  // Dodavanje novog deteta
   addChild(data: AddChildRequest): Observable<{ message: string; child: Child }> {
     return this.api.post('/parent/children', data);
   }

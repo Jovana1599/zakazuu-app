@@ -3,11 +3,15 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
   role_as: number;
+  phone?: string;
+  description?: string;
+  website?: string;
+  created_at?: string;
 }
 
 interface AuthResponse {
@@ -36,16 +40,26 @@ export class AuthService {
     email: string,
     password: string,
     password_confirmation: string,
-    role_as: number
+    registrationType: number,
+    phone?: string,
+    description?: string,
+    website?: string
   ): Observable<AuthResponse> {
+    const payload: any = {
+      name,
+      email,
+      password,
+      password_confirmation,
+      registrationType,
+    };
+
+    // Dodaj polja za ustanovu ako postoje
+    if (phone) payload.phone = phone;
+    if (description) payload.description = description;
+    if (website) payload.website = website;
+
     return this.apiService
-      .post<AuthResponse>('/register', {
-        name,
-        email,
-        password,
-        password_confirmation,
-        role_as,
-      })
+      .post<AuthResponse>('/register', payload)
       .pipe(tap((response) => this.saveAuthData(response)));
   }
 

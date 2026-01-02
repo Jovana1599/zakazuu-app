@@ -1,95 +1,267 @@
-<div class="register-container">
-  <div class="register-card">
-    <div class="card-header">
-      <h1>Kreiraj nalog</h1>
-      <p class="subtitle">Registruj se kao roditelj i pronađi aktivnosti za svoje mališane</p>
+<div class="login-page">
+  <div class="login-container">
+    <!-- Left side - Branding -->
+    <div class="login-branding">
+      <div class="branding-content">
+        <div class="logo">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h1>ZakaZuu</h1>
+        <p>Platforma za rezervaciju dečijih aktivnosti</p>
+        <div class="features">
+          <div class="feature">
+            <i class="fas fa-search"></i>
+            <span>Pronađite aktivnosti u vašem gradu</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-clock"></i>
+            <span>Rezervišite termine online</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-child"></i>
+            <span>Upravljajte profilima dece</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <!-- Ime i prezime -->
-      <div class="form-group">
-        <label for="name">Ime i prezime</label>
-        <input
-          type="text"
-          id="name"
-          formControlName="name"
-          placeholder="Unesite ime i prezime"
-          [class.error]="name?.invalid && name?.touched"
-        />
-        <div class="error-message" *ngIf="name?.invalid && name?.touched">
-          <span *ngIf="name?.errors?.['required']">Ime je obavezno</span>
-          <span *ngIf="name?.errors?.['minlength']">Minimum 2 karaktera</span>
+    <!-- Right side - Form -->
+    <div class="login-form-container">
+      <div class="login-card">
+        <div class="card-header">
+          <h2>Kreirajte nalog</h2>
+          <p>
+            {{
+              registrationType() === 2
+                ? 'Registrujte svoju ustanovu'
+                : 'Registrujte se kao roditelj'
+            }}
+          </p>
         </div>
-      </div>
 
-      <!-- Email -->
-      <div class="form-group">
-        <label for="email">Email adresa</label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          placeholder="vas@email.com"
-          [class.error]="email?.invalid && email?.touched"
-        />
-        <div class="error-message" *ngIf="email?.invalid && email?.touched">
-          <span *ngIf="email?.errors?.['required']">Email je obavezan</span>
-          <span *ngIf="email?.errors?.['email']">Unesite validan email</span>
-        </div>
-      </div>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <div class="form-grid" [class.single-column]="registrationType() === 0">
+            <!-- LEVA KOLONA -->
+            <div class="form-column">
+              <!-- Name field -->
+              <div class="form-group">
+                <label for="name">
+                  <i class="fas {{ registrationType() === 2 ? 'fa-building' : 'fa-user' }}"></i>
+                  {{ registrationType() === 2 ? 'Naziv ustanove' : 'Ime i prezime' }}
+                </label>
+                <div class="input-wrapper" [class.error]="name?.invalid && name?.touched">
+                  <input
+                    type="text"
+                    id="name"
+                    formControlName="name"
+                    [placeholder]="
+                      registrationType() === 2 ? 'Npr. Sportski klub Zvezda' : 'Vaše ime i prezime'
+                    "
+                    (focus)="clearError()"
+                  />
+                </div>
+                @if (name?.hasError('required') && name?.touched) {
+                <span class="error-text">
+                  <i class="fas fa-exclamation-circle"></i>
+                  Ime je obavezno
+                </span>
+                }
+              </div>
 
-      <!-- Lozinka -->
-      <div class="form-group">
-        <label for="password">Lozinka</label>
-        <input
-          type="password"
-          id="password"
-          formControlName="password"
-          placeholder="Minimum 6 karaktera"
-          [class.error]="password?.invalid && password?.touched"
-        />
-        <div class="error-message" *ngIf="password?.invalid && password?.touched">
-          <span *ngIf="password?.errors?.['required']">Lozinka je obavezna</span>
-          <span *ngIf="password?.errors?.['minlength']">Minimum 6 karaktera</span>
-        </div>
-      </div>
+              <!-- Email field -->
+              <div class="form-group">
+                <label for="email">
+                  <i class="fas fa-envelope"></i>
+                  Email adresa
+                </label>
+                <div class="input-wrapper" [class.error]="email?.invalid && email?.touched">
+                  <input
+                    type="email"
+                    id="email"
+                    formControlName="email"
+                    placeholder="vas@email.com"
+                    (focus)="clearError()"
+                  />
+                </div>
+                @if (email?.hasError('required') && email?.touched) {
+                <span class="error-text">
+                  <i class="fas fa-exclamation-circle"></i>
+                  Email je obavezan
+                </span>
+                }
+              </div>
 
-      <!-- Potvrda lozinke -->
-      <div class="form-group">
-        <label for="password_confirmation">Potvrdi lozinku</label>
-        <input
-          type="password"
-          id="password_confirmation"
-          formControlName="password_confirmation"
-          placeholder="Ponovite lozinku"
-          [class.error]="password_confirmation?.invalid && password_confirmation?.touched"
-        />
-        <div
-          class="error-message"
-          *ngIf="password_confirmation?.invalid && password_confirmation?.touched"
-        >
-          <span *ngIf="password_confirmation?.errors?.['required']"
-            >Potvrda lozinke je obavezna</span
+              <!-- Password field -->
+              <div class="form-group">
+                <label for="password">
+                  <i class="fas fa-lock"></i>
+                  Lozinka
+                </label>
+                <div class="input-wrapper" [class.error]="password?.invalid && password?.touched">
+                  <input
+                    [type]="showPassword() ? 'text' : 'password'"
+                    id="password"
+                    formControlName="password"
+                    placeholder="Minimum 6 karaktera"
+                    (focus)="clearError()"
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    (click)="togglePassword()"
+                    tabindex="-1"
+                  >
+                    <i class="fas {{ showPassword() ? 'fa-eye-slash' : 'fa-eye' }}"></i>
+                  </button>
+                </div>
+                @if (password?.hasError('required') && password?.touched) {
+                <span class="error-text">
+                  <i class="fas fa-exclamation-circle"></i>
+                  Lozinka je obavezna
+                </span>
+                }
+              </div>
+
+              <!-- Confirm Password field -->
+              <div class="form-group">
+                <label for="password_confirmation">
+                  <i class="fas fa-lock"></i>
+                  Potvrda lozinke
+                </label>
+                <div
+                  class="input-wrapper"
+                  [class.error]="password_confirmation?.invalid && password_confirmation?.touched"
+                >
+                  <input
+                    [type]="showConfirmPassword() ? 'text' : 'password'"
+                    id="password_confirmation"
+                    formControlName="password_confirmation"
+                    placeholder="Ponovite lozinku"
+                    (focus)="clearError()"
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    (click)="toggleConfirmPassword()"
+                    tabindex="-1"
+                  >
+                    <i class="fas {{ showConfirmPassword() ? 'fa-eye-slash' : 'fa-eye' }}"></i>
+                  </button>
+                </div>
+                @if (password_confirmation?.hasError('passwordMismatch') &&
+                password_confirmation?.touched) {
+                <span class="error-text">
+                  <i class="fas fa-exclamation-circle"></i>
+                  Lozinke se ne poklapaju
+                </span>
+                }
+              </div>
+
+              <!-- Phone - dostupno za sve -->
+              <div class="form-group">
+                <label for="phone">
+                  <i class="fas fa-phone"></i>
+                  Telefon (opciono)
+                </label>
+                <div class="input-wrapper">
+                  <input
+                    type="tel"
+                    id="phone"
+                    formControlName="phone"
+                    placeholder="Npr. 011 123 4567"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- DESNA KOLONA - samo za ustanove -->
+            @if (registrationType() === 2) {
+            <div class="form-column">
+              <!-- Website -->
+              <div class="form-group">
+                <label for="website">
+                  <i class="fas fa-globe"></i>
+                  Web sajt
+                </label>
+                <div class="input-wrapper">
+                  <input
+                    type="url"
+                    id="website"
+                    formControlName="website"
+                    placeholder="https://www.vasaustanova.rs"
+                  />
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="form-group">
+                <label for="description">
+                  <i class="fas fa-align-left"></i>
+                  Opis ustanove
+                </label>
+                <div class="input-wrapper">
+                  <textarea
+                    id="description"
+                    formControlName="description"
+                    placeholder="Ukratko opišite vašu ustanovu..."
+                    rows="4"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+
+          <!-- Server error -->
+          @if (errorMessage()) {
+          <div class="server-error">
+            <i class="fas fa-times-circle"></i>
+            <span>{{ errorMessage() }}</span>
+          </div>
+          }
+
+          <!-- Submit button -->
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="isLoading()"
+            [class.loading]="isLoading()"
+            [class.btn-compact]="registrationType() === 0"
           >
-          <span *ngIf="password_confirmation?.errors?.['passwordMismatch']"
-            >Lozinke se ne poklapaju</span
-          >
-        </div>
+            @if (isLoading()) {
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Registracija...</span>
+            } @else {
+            <span>Registruj se</span>
+            <i class="fas fa-user-plus"></i>
+            }
+          </button>
+
+          <!-- Login link -->
+          <div class="form-footer">
+            <p>Već imate nalog?</p>
+            <a routerLink="/login" class="register-link">
+              Prijavite se
+              <i class="fas fa-sign-in-alt"></i>
+            </a>
+          </div>
+
+          <!-- Institution toggle -->
+          <div class="institution-toggle">
+            @if (registrationType() === 0) {
+            <button type="button" class="toggle-link" (click)="selectRole(2)">
+              <i class="fas fa-building"></i>
+              Registruj ustanovu i ponudi svoje usluge
+            </button>
+            } @else {
+            <button type="button" class="toggle-link" (click)="selectRole(0)">
+              <i class="fas fa-user"></i>
+              Registruj se kao roditelj
+            </button>
+            }
+          </div>
+        </form>
       </div>
-
-      <!-- Server error -->
-      <div class="server-error" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-
-      <!-- Submit -->
-      <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || isLoading">
-        <span *ngIf="!isLoading">Registruj se</span>
-        <span *ngIf="isLoading">Registracija u toku...</span>
-      </button>
-
-      <!-- Link na login -->
-      <p class="login-link">Već imaš nalog? <a routerLink="/login">Prijavi se</a></p>
-    </form>
+    </div>
   </div>
 </div>

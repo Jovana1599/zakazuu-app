@@ -1,0 +1,218 @@
+<div class="profile-content">
+  <!-- Profile Section -->
+  <section class="section-card profile-section">
+    <h2><i class="fa-solid fa-user"></i> Moj profil</h2>
+    @if (user()) {
+    <div class="profile-info">
+      <div class="avatar">
+        <span>{{ user()!.name.charAt(0).toUpperCase() }}</span>
+      </div>
+      <div class="info-details">
+        <h3>{{ user()!.name }}</h3>
+        <div class="info-row">
+          <p><i class="fa-solid fa-envelope"></i> {{ user()!.email }}</p>
+          @if (user()!.phone) {
+          <p><i class="fa-solid fa-phone"></i> {{ user()!.phone }}</p>
+          }
+        </div>
+        <p class="member-since"><i class="fa-solid fa-calendar-check"></i> Član od {{ user()!.created_at | date:'MMMM yyyy.' }}</p>
+      </div>
+      <button class="btn-edit-profile">
+        <i class="fa-solid fa-pen"></i>
+        Izmeni profil
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="profile-stats">
+      <div class="stat-item">
+        <div class="stat-icon children-icon">
+          <i class="fa-solid fa-children"></i>
+        </div>
+        <div class="stat-details">
+          <span class="stat-number">{{ children().length }}</span>
+          <span class="stat-label">Dece</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon activities-icon">
+          <i class="fa-solid fa-calendar-days"></i>
+        </div>
+        <div class="stat-details">
+          <span class="stat-number">0</span>
+          <span class="stat-label">Rezervacija</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon reviews-icon">
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <div class="stat-details">
+          <span class="stat-number">0</span>
+          <span class="stat-label">Recenzija</span>
+        </div>
+      </div>
+    </div>
+    }
+  </section>
+
+  <!-- Children Section -->
+  <section class="section-card">
+    <div class="section-header">
+      <h2><i class="fa-solid fa-children"></i> Moja deca</h2>
+      <button class="btn-add" (click)="openAddForm()">
+        <i class="fa-solid fa-plus"></i>
+        Dodaj podatke o detetu
+      </button>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      Učitavanje...
+    </div>
+    } @else if (error()) {
+    <div class="error">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      {{ error() }}
+    </div>
+    } @else if (hasChildren()) {
+    <div class="children-grid">
+      @for (child of children(); track child.id) {
+      <div class="child-card">
+        <div class="child-avatar">
+          <i class="fa-solid fa-child"></i>
+        </div>
+        <div class="child-info">
+          <h3>{{ child.first_name }} {{ child.last_name }}</h3>
+          <p class="age">
+            <i class="fa-solid fa-cake-candles"></i>
+            {{ child.age }} god.
+          </p>
+          @if (child.medical_restrictions) {
+          <p class="medical">
+            <i class="fa-solid fa-notes-medical"></i>
+            {{ child.medical_restrictions }}
+          </p>
+          } @if (child.note) {
+          <p class="note">
+            <i class="fa-solid fa-sticky-note"></i>
+            {{ child.note }}
+          </p>
+          }
+        </div>
+        <div class="child-actions">
+          <button class="btn-edit" (click)="openEditForm(child)" title="Izmeni">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="btn-delete" (click)="deleteChild(child.id)" title="Obriši">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fa-solid fa-child-reaching"></i>
+      </div>
+      <h3>Nemate dodatu decu</h3>
+      <p>Dodajte podatke o deci kako biste mogli da rezervišete aktivnosti.</p>
+      <button class="btn-add-large" (click)="openAddForm()">
+        <i class="fa-solid fa-plus"></i>
+        Dodaj dete
+      </button>
+    </div>
+    }
+  </section>
+
+  <!-- Modal Form -->
+  @if (isFormVisible()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">
+            <i class="fa-solid fa-child"></i>
+          </div>
+          <div>
+            <h2>{{ editingChild() ? 'Izmeni podatke' : 'Dodaj podatke o detetu' }}</h2>
+            <p>{{ editingChild() ? 'Izmenite podatke o detetu' : 'Dodajte podatke o detetu' }}</p>
+          </div>
+        </div>
+        <button type="button" class="close-btn" (click)="closeForm()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <form (ngSubmit)="saveChild()">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fa-solid fa-user"></i> Ime</label>
+              <input
+                type="text"
+                [(ngModel)]="childForm.first_name"
+                name="first_name"
+                placeholder="Unesite ime"
+              />
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-user"></i> Prezime</label>
+              <input
+                type="text"
+                [(ngModel)]="childForm.last_name"
+                name="last_name"
+                placeholder="Unesite prezime"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-cake-candles"></i> Godine starosti</label>
+            <input
+              type="number"
+              [(ngModel)]="childForm.age"
+              name="age"
+              min="1"
+              max="18"
+              placeholder="Unesite godine"
+            />
+            <span class="hint">Dete mora imati između 1 i 18 godina</span>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-notes-medical"></i> Medicinska ograničenja</label>
+            <textarea
+              [(ngModel)]="childForm.medical_restrictions"
+              name="medical_restrictions"
+              rows="3"
+              placeholder="Alergije, zdravstvena stanja..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-sticky-note"></i> Napomena</label>
+            <textarea
+              [(ngModel)]="childForm.note"
+              name="note"
+              rows="3"
+              placeholder="Dodatne
+  informacije..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeForm()">Otkaži</button>
+          <button type="submit" class="btn-submit" [disabled]="!isFormValid()">
+            <i class="fa-solid fa-check"></i>
+            {{ editingChild() ? 'Sačuvaj' : 'Dodaj' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+</div>
