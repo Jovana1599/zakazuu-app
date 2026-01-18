@@ -1,0 +1,32 @@
+.parent-panel {
+  display: flex;
+  min-height: 100vh;
+  padding-top: 70px;
+  background: #f5f5f5;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 260px;
+  padding: 30px 40px;
+  width: calc(100% - 260px);
+  max-width: calc(100% - 260px);
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .parent-panel {
+    flex-direction: column;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+    width: 100%;
+    max-width: 100%;
+  }
+}

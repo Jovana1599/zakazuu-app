@@ -1,0 +1,156 @@
+<!-- Header -->
+<header class="page-header">
+      <div class="header-info">
+        <h1>Rezervacije</h1>
+        <p>Upravljajte rezervacijama vaših aktivnosti</p>
+      </div>
+    </header>
+
+    @if (isLoading()) {
+    <div class="loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Učitavanje...</p>
+    </div>
+    } @else {
+    <!-- Tabs -->
+    <div class="tabs">
+      <button
+        class="tab"
+        [class.active]="selectedStatus() === 'pending'"
+        (click)="onStatusChange('pending')"
+      >
+        Na čekanju @if (pendingCount() > 0) {
+        <span class="badge">{{ pendingCount() }}</span>
+        }
+      </button>
+      <button
+        class="tab"
+        [class.active]="selectedStatus() === 'confirmed'"
+        (click)="onStatusChange('confirmed')"
+      >
+        Odobrene
+      </button>
+      <button
+        class="tab"
+        [class.active]="selectedStatus() === 'rejected'"
+        (click)="onStatusChange('rejected')"
+      >
+        Odbijene
+      </button>
+      <button
+        class="tab"
+        [class.active]="selectedStatus() === 'all'"
+        (click)="onStatusChange('all')"
+      >
+        Sve
+      </button>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Aktivnost:</label>
+        <select (change)="onActivityFilterChange($event)">
+          <option value="">Sve aktivnosti</option>
+          @for (activity of activities(); track activity.id) {
+          <option [value]="activity.id">{{ activity.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Table -->
+    @if (reservations().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <h3>Nema rezervacija</h3>
+      <p>Trenutno nema rezervacija za prikaz.</p>
+    </div>
+    } @else {
+    <div class="table-container">
+      <table class="reservations-table">
+        <thead>
+          <tr>
+            <th>Roditelj</th>
+            <th>Dete</th>
+            <th>Aktivnost</th>
+            <th>Termin</th>
+            <th>Napomena</th>
+            <th>Akcije</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reservation of reservations(); track reservation.id) {
+          <tr
+            [class.confirmed]="reservation.status === 'confirmed'"
+            [class.rejected]="reservation.status === 'rejected'"
+          >
+            <td class="parent-cell">
+              <div class="parent-name">{{ reservation.parent?.name || '-' }}</div>
+              <div class="parent-phone">
+                <i class="fa-solid fa-phone"></i>
+                {{ reservation.parent?.email || '-' }}
+              </div>
+            </td>
+            <td class="child-cell">
+              <div class="child-name">
+                {{ reservation.child?.first_name }} {{ reservation.child?.last_name?.charAt(0) }}.
+              </div>
+              <div class="child-age">{{ reservation.child?.age }} god.</div>
+            </td>
+            <td class="activity-cell">
+              {{ reservation.activity?.name || '-' }}
+            </td>
+            <td class="time-cell">
+              <div class="date">{{ formatDate(reservation.time_slot?.date || '') }}</div>
+              <div class="time">
+                {{ formatTime(reservation.time_slot?.time_from || '') }} -
+                {{ formatTime(reservation.time_slot?.time_to || '') }}
+              </div>
+            </td>
+            <td class="note-cell">
+              @if (reservation.note) {
+              <div class="note-content" [class.expanded]="isNoteExpanded(reservation.id)">
+                {{ reservation.note }}
+              </div>
+              <button class="note-toggle" (click)="toggleNote(reservation.id)">
+                <i
+                  [class]="
+                    isNoteExpanded(reservation.id)
+                      ? 'fa-solid fa-chevron-up'
+                      : 'fa-solid fa-chevron-down'
+                  "
+                ></i>
+              </button>
+              } @else {
+              <span class="no-note">-</span>
+              }
+            </td>
+            <td class="actions-cell">
+              @if (reservation.status === 'pending') {
+              <button
+                class="btn-approve"
+                (click)="approveReservation(reservation.id)"
+                title="Odobri"
+              >
+                <i class="fa-solid fa-check"></i>
+              </button>
+              <button class="btn-reject" (click)="rejectReservation(reservation.id)" title="Odbij">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              } @else if (reservation.status === 'confirmed') {
+              <span class="status-badge confirmed">
+                <i class="fa-solid fa-check"></i> Odobreno
+              </span>
+              } @else if (reservation.status === 'rejected') {
+              <span class="status-badge rejected">
+                <i class="fa-solid fa-xmark"></i> Odbijeno
+              </span>
+              }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+} }
