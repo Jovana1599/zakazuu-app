@@ -1,149 +1,181 @@
-<!-- Header -->
-<header class="page-header">
-      <div class="welcome">
-        <h1>Dobrodošli, {{ user?.name }}</h1>
-        <p>Upravljajte svojim aktivnostima i rezervacijama</p>
-      </div>
-    </header>
-
-    @if (isLoading()) {
-    <div class="loading">
-      <i class="fa-solid fa-spinner fa-spin"></i>
-      <p>Učitavanje...</p>
+<section class="profile-card">
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <span>{{ user?.name?.charAt(0)?.toUpperCase() }}</span>
     </div>
-    } @else {
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon activities">
-          <i class="fa-solid fa-futbol"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ activitiesCount() }}</span>
-          <span class="stat-label">Aktivnosti</span>
-        </div>
+    <div class="profile-info">
+      <h1>{{ user?.name }}</h1>
+      <p class="profile-role"><i class="fa-solid fa-building"></i> Ustanova</p>
+    </div>
+    <button class="btn-edit-profile" routerLink="/institution/settings">
+      <i class="fa-solid fa-pen"></i>
+      Izmeni profil
+    </button>
+  </div>
+  <div class="profile-details">
+    <div class="detail-item">
+      <i class="fa-solid fa-envelope"></i>
+      <span>{{ user?.email }}</span>
+    </div>
+    @if (user?.phone) {
+      <div class="detail-item">
+        <i class="fa-solid fa-phone"></i>
+        <span>{{ user?.phone }}</span>
       </div>
-
-      <div class="stat-card">
-        <div class="stat-icon locations">
-          <i class="fa-solid fa-location-dot"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ locationsCount() }}</span>
-          <span class="stat-label">Lokacije</span>
-        </div>
+    }
+    @if (user?.website) {
+      <div class="detail-item">
+        <i class="fa-solid fa-globe"></i>
+        <a [href]="user?.website" target="_blank">{{ user?.website }}</a>
       </div>
-
-      <div class="stat-card">
-        <div class="stat-icon timeslots">
-          <i class="fa-solid fa-calendar"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ timeSlotsCount() }}</span>
-          <span class="stat-label">Termini</span>
-        </div>
+    }
+    @if (user?.description) {
+      <div class="detail-item description">
+        <i class="fa-solid fa-info-circle"></i>
+        <span>{{ user?.description }}</span>
       </div>
+    }
+  </div>
+</section>
 
-      <div class="stat-card">
-        <div class="stat-icon reservations">
-          <i class="fa-solid fa-clock"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ pendingReservationsCount() }}</span>
-          <span class="stat-label">Na čekanju</span>
-        </div>
+@if (isLoading()) {
+  <div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p>Učitavanje...</p>
+  </div>
+} @else {
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon activities">
+        <i class="fa-solid fa-futbol"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ activitiesCount() }}</span>
+        <span class="stat-label">Aktivnosti</span>
       </div>
     </div>
 
-    <!-- Content Grid -->
-    <div class="content-grid">
-      <!-- Recent Activities -->
-      <section class="card">
-        <div class="card-header">
-          <h2><i class="fa-solid fa-futbol"></i> Nedavne aktivnosti</h2>
-          <a routerLink="/institution/activities" class="link">Vidi sve</a>
-        </div>
-        <div class="card-body">
-          @if (recentActivities().length === 0) {
+    <div class="stat-card">
+      <div class="stat-icon locations">
+        <i class="fa-solid fa-location-dot"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ locationsCount() }}</span>
+        <span class="stat-label">Lokacije</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon timeslots">
+        <i class="fa-solid fa-calendar"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ timeSlotsCount() }}</span>
+        <span class="stat-label">Termini</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon reservations">
+        <i class="fa-solid fa-clock"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ pendingReservationsCount() }}</span>
+        <span class="stat-label">Na čekanju</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="content-grid">
+    <!-- Recent Activities -->
+    <section class="card">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-futbol"></i> Nedavne aktivnosti</h2>
+        <a routerLink="/institution/activities" class="link">Vidi sve</a>
+      </div>
+      <div class="card-body">
+        @if (recentActivities().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-folder-open"></i>
             <p>Nemate kreiranih aktivnosti</p>
             <a routerLink="/institution/activities/new" class="btn-link">Kreiraj prvu aktivnost</a>
           </div>
-          } @else {
+        } @else {
           <div class="activity-list">
             @for (activity of recentActivities(); track activity.id) {
-            <div class="activity-item">
-              <div class="activity-info">
-                <h4>{{ activity.name }}</h4>
-                <span class="category">{{ activity.category }}</span>
+              <div class="activity-item">
+                <div class="activity-info">
+                  <h4>{{ activity.name }}</h4>
+                  <span class="category">{{ activity.category }}</span>
+                </div>
+                <div class="activity-meta">
+                  <span class="price">{{ activity.price | number: '1.0-0' }} RSD</span>
+                  <span class="age">{{ activity.age_from }}-{{ activity.age_to }} god.</span>
+                </div>
               </div>
-              <div class="activity-meta">
-                <span class="price">{{ activity.price | number : '1.0-0' }} RSD</span>
-                <span class="age">{{ activity.age_from }}-{{ activity.age_to }} god.</span>
-              </div>
-            </div>
             }
           </div>
-          }
-        </div>
-      </section>
+        }
+      </div>
+    </section>
 
-      <!-- Pending Reservations -->
-      <section class="card">
-        <div class="card-header">
-          <h2><i class="fa-solid fa-clock"></i> Rezervacije na čekanju</h2>
-          <a routerLink="/institution/reservations" class="link">Vidi sve</a>
-        </div>
-        <div class="card-body">
-          @if (pendingReservations().length === 0) {
+    <!-- Pending Reservations -->
+    <section class="card">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-clock"></i> Rezervacije na čekanju</h2>
+        <a routerLink="/institution/reservations" class="link">Vidi sve</a>
+      </div>
+      <div class="card-body">
+        @if (pendingReservations().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-check-circle"></i>
             <p>Nema rezervacija na čekanju</p>
           </div>
-          } @else {
+        } @else {
           <div class="reservation-list">
             @for (reservation of pendingReservations(); track reservation.id) {
-            <div class="reservation-item">
-              <div class="reservation-info">
-                <h4>{{ reservation.activity?.name }}</h4>
-                <p class="child-name">
-                  <i class="fa-solid fa-child"></i>
-                  {{ reservation.child?.first_name }} {{ reservation.child?.last_name }} ({{
-                    reservation.child?.age
-                  }}
-                  god.)
-                </p>
-                @if (reservation.time_slot) {
-                <p class="time-slot">
-                  <i class="fa-solid fa-calendar"></i>
-                  {{ formatDate(reservation.time_slot.date) }},
-                  {{ formatTime(reservation.time_slot.time_from) }} -
-                  {{ formatTime(reservation.time_slot.time_to) }}
-                </p>
-                }
+              <div class="reservation-item">
+                <div class="reservation-info">
+                  <h4>{{ reservation.activity?.name }}</h4>
+                  <p class="child-name">
+                    <i class="fa-solid fa-child"></i>
+                    {{ reservation.child?.first_name }} {{ reservation.child?.last_name }} ({{
+                      reservation.child?.age
+                    }}
+                    god.)
+                  </p>
+                  @if (reservation.time_slot) {
+                    <p class="time-slot">
+                      <i class="fa-solid fa-calendar"></i>
+                      {{ formatDate(reservation.time_slot.date) }},
+                      {{ formatTime(reservation.time_slot.time_from) }} -
+                      {{ formatTime(reservation.time_slot.time_to) }}
+                    </p>
+                  }
+                </div>
+                <div class="reservation-actions">
+                  <button
+                    class="btn-approve"
+                    (click)="approveReservation(reservation.id)"
+                    title="Odobri"
+                  >
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                  <button
+                    class="btn-reject"
+                    (click)="rejectReservation(reservation.id)"
+                    title="Odbij"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
               </div>
-              <div class="reservation-actions">
-                <button
-                  class="btn-approve"
-                  (click)="approveReservation(reservation.id)"
-                  title="Odobri"
-                >
-                  <i class="fa-solid fa-check"></i>
-                </button>
-                <button
-                  class="btn-reject"
-                  (click)="rejectReservation(reservation.id)"
-                  title="Odbij"
-                >
-                  <i class="fa-solid fa-xmark"></i>
-                </button>
-              </div>
-            </div>
             }
           </div>
-          }
-        </div>
-      </section>
-    </div>
+        }
+      </div>
+    </section>
+  </div>
 }
